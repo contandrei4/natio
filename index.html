@@ -1,117 +1,243 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ro">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FRC National Scouting</title>
+<title>Decode Counter – FTC National</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  :root { --yellow: #e8c93a; --black: #111; --white: #f5f5f0; --gray: #2a2a2a; --red: #e04b2a; --green: #4caf87; }
+  :root {
+    --yellow: #e8c93a;
+    --black: #111;
+    --white: #f5f5f0;
+    --gray: #2a2a2a;
+    --red: #e04b2a;
+    --green: #4caf87;
+  }
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: var(--black); color: var(--white); font-family: 'Space Mono', monospace; min-height: 100vh; display: flex; justify-content: center; padding: 20px; }
-  .app-container { width: 100%; max-width: 420px; background: #161616; border: 1px solid #333; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-  h1 { font-family: 'Bebas Neue'; font-size: 2.8rem; color: var(--yellow); letter-spacing: 2px; text-align: center; margin-bottom: 25px; line-height: 1; }
-  .input-group { margin-bottom: 20px; }
-  label { display: block; font-size: 0.75rem; color: var(--yellow); margin-bottom: 8px; text-transform: uppercase; font-weight: bold; }
-  input, select { width: 100%; background: var(--gray); border: 1px solid #444; padding: 14px; color: white; font-family: 'Space Mono'; font-size: 1rem; outline: none; }
-  input:focus { border-color: var(--yellow); }
-  .counter-card { background: #1f1f1f; border-left: 4px solid var(--yellow); padding: 15px; margin-bottom: 15px; }
-  .controls { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
-  .btn-add { flex: 2; background: var(--yellow); color: black; border: none; padding: 15px; font-family: 'Bebas Neue'; font-size: 1.4rem; cursor: pointer; transition: 0.2s; }
-  .btn-add:active { transform: scale(0.98); opacity: 0.9; }
-  .btn-undo { flex: 1; background: #333; color: #999; border: none; padding: 15px; font-size: 0.7rem; cursor: pointer; text-transform: uppercase; }
-  .count-display { font-size: 2.2rem; min-width: 50px; text-align: center; font-family: 'Bebas Neue'; color: var(--white); }
-  .parking-box { display: flex; align-items: center; gap: 15px; background: #1f1f1f; padding: 15px; margin-bottom: 20px; border: 1px solid #333; cursor: pointer; }
-  .parking-box input { width: 22px; height: 22px; cursor: pointer; }
-  .btn-send { width: 100%; background: var(--yellow); color: black; border: none; padding: 20px; font-family: 'Bebas Neue'; font-size: 1.8rem; cursor: pointer; margin-top: 10px; }
-  .btn-send:disabled { background: #555; cursor: not-allowed; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Space Mono', monospace;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 24px 16px;
+    background-image: radial-gradient(circle at 20% 20%, rgba(232,201,58,0.05) 0%, transparent 50%);
+  }
+
+  .app-container {
+    width: 100%;
+    max-width: 420px;
+    background: #161616;
+    border: 1px solid #333;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  }
+
+  .screen { display: none; padding: 24px; animation: fadeIn 0.3s ease; }
+  .screen.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  h1 { font-family: 'Bebas Neue'; font-size: 3rem; color: var(--yellow); letter-spacing: 2px; line-height: 0.9; margin-bottom: 8px; }
+  .subtitle { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 3px; color: #666; margin-bottom: 32px; }
+
+  .input-group { margin-bottom: 24px; }
+  label { display: block; font-size: 0.7rem; text-transform: uppercase; color: var(--yellow); margin-bottom: 8px; font-weight: 700; }
+  
+  input, select {
+    width: 100%;
+    background: var(--gray);
+    border: 1px solid #333;
+    padding: 14px;
+    color: white;
+    font-family: 'Space Mono', monospace;
+    outline: none;
+    transition: 0.2s;
+  }
+  input:focus { border-color: var(--yellow); background: #333; }
+
+  .counter-card { background: #1a1a1a; border: 1px solid #333; padding: 20px; margin-bottom: 16px; position: relative; }
+  .counter-label { font-family: 'Bebas Neue'; font-size: 1.2rem; color: #888; margin-bottom: 12px; display: flex; justify-content: space-between; }
+  
+  .controls { display: flex; align-items: center; gap: 16px; }
+  .btn-main { flex-grow: 1; background: var(--yellow); color: black; border: none; padding: 16px; font-family: 'Bebas Neue'; font-size: 1.5rem; cursor: pointer; transition: 0.1s; }
+  .btn-main:active { transform: scale(0.98); }
+  .btn-undo { background: #333; color: #888; border: none; padding: 16px; font-size: 0.7rem; font-family: 'Space Mono'; cursor: pointer; text-transform: uppercase; }
+  .count-display { font-size: 2.5rem; font-weight: 700; min-width: 60px; text-align: center; font-family: 'Bebas Neue'; }
+
+  .parking-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    padding: 15px;
+    margin-bottom: 16px;
+    cursor: pointer;
+  }
+
+  /* REPORT STYLING */
+  .report-box { background: var(--gray); border-left: 4px solid var(--yellow); padding: 20px; margin-bottom: 24px; }
+  .report-item { margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+  .report-val { font-family: 'Bebas Neue'; font-size: 2rem; color: var(--yellow); line-height: 1; }
+  .report-key { font-size: 0.65rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+
+  /* CONFIRMATION TOAST */
+  #toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--green);
+    color: black;
+    padding: 12px 24px;
+    font-weight: bold;
+    font-family: 'Bebas Neue';
+    font-size: 1.2rem;
+    transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 1000;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
 
+<div id="toast">DATA SYNCHRONIZED SUCCESSFULLY</div>
+
 <div class="app-container">
-  <h1>NATIONAL SCOUTING</h1>
   
-  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+  <div id="screen-scouter" class="screen active">
+    <h1>FTC NATIONAL</h1>
+    <div class="subtitle">Scouting Session v2.0</div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div class="input-group">
+            <label>Team Number</label>
+            <input type="number" id="team-number" placeholder="0000">
+        </div>
+        <div class="input-group">
+            <label>Position</label>
+            <select id="pos-select">
+                <option value="R ap">Red Wing (R ap)</option>
+                <option value="R dep">Red Back (R dep)</option>
+                <option value="A ap">Blue Wing (A ap)</option>
+                <option value="A dep">Blue Back (A dep)</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="counter-card">
+      <div class="counter-label">AUTO PIECES IN</div>
+      <div class="controls">
+        <button class="btn-main" onclick="change('auto_in', 1)">+1 SCORE</button>
+        <div class="count-display" id="val-auto-in">0</div>
+        <button class="btn-undo" onclick="change('auto_in', -1)">Undo</button>
+      </div>
+    </div>
+
+    <div class="counter-card" style="border-color: var(--red);">
+      <div class="counter-label" style="color:var(--red)">AUTO MISSED</div>
+      <div class="controls">
+        <button class="btn-main" style="background:var(--red); color:white" onclick="change('auto_missed', 1)">+1 MISS</button>
+        <div class="count-display" id="val-auto-missed">0</div>
+        <button class="btn-undo" onclick="change('auto_missed', -1)">Undo</button>
+      </div>
+    </div>
+
+    <div class="counter-card" style="border-color: var(--green);">
+      <div class="counter-label" style="color:var(--green)">TELEOP TOTAL SCORE</div>
+      <div class="controls">
+        <button class="btn-main" style="background:var(--green); color:white" onclick="change('teleop', 1)">+1 PIECE</button>
+        <div class="count-display" id="val-teleop">0</div>
+        <button class="btn-undo" onclick="change('teleop', -1)">Undo</button>
+      </div>
+    </div>
+
+    <label class="parking-row">
+      <input type="checkbox" id="parking-check" style="width:20px; height:20px; accent-color:var(--yellow)">
+      <span style="color:var(--yellow); font-size:0.8rem; font-weight:700;">PARKING BIFAT (P)</span>
+    </label>
+
     <div class="input-group">
-      <label>Team Number</label>
-      <input type="number" id="team-number" placeholder="0000">
+      <label>RPs Meci (Ranking Points)</label>
+      <input type="number" id="rp-input" value="0">
     </div>
-    <div class="input-group">
-      <label>Position</label>
-      <select id="pos-select">
-        <option value="R ap">R ap</option>
-        <option value="R dep">R dep</option>
-        <option value="A ap">A ap</option>
-        <option value="A dep">A dep</option>
-      </select>
-    </div>
+
+    <button class="btn-main" style="width:100%; padding:20px; margin-top:10px;" onclick="generateReport()">Request Report</button>
   </div>
 
-  <div class="counter-card">
-    <label>AUTO IN</label>
-    <div class="controls">
-      <button class="btn-add" onclick="change('auto_in', 1)">+1 Piece</button>
-      <div class="count-display" id="val-auto-in">0</div>
-      <button class="btn-undo" onclick="change('auto_in', -1)">Undo</button>
-    </div>
+  <div id="screen-report" class="screen">
+    <h1>DATA REPORT</h1>
+    <div class="subtitle" id="report-meta">Verification Required</div>
+    
+    <div class="report-box" id="report-content">
+      </div>
+
+    <button class="btn-main" id="btn-confirm" style="width:100%; padding:20px; margin-bottom:12px;" onclick="confirmAndSend()">Confirm & Transmit</button>
+    <button class="btn-undo" style="width:100%;" onclick="switchScreen('screen-scouter')">Edit Data</button>
   </div>
 
-  <div class="counter-card" style="border-left-color: var(--red);">
-    <label style="color:var(--red)">AUTO MISSED</label>
-    <div class="controls">
-      <button class="btn-add" style="background:var(--red); color:white" onclick="change('auto_missed', 1)">+1 Miss</button>
-      <div class="count-display" id="val-auto-missed">0</div>
-      <button class="btn-undo" onclick="change('auto_missed', -1)">Undo</button>
-    </div>
-  </div>
-
-  <div class="counter-card" style="border-left-color: var(--green);">
-    <label style="color:var(--green)">TELEOP SCORE</label>
-    <div class="controls">
-      <button class="btn-add" style="background:var(--green); color:white" onclick="change('teleop', 1)">+1 Score</button>
-      <div class="count-display" id="val-teleop">0</div>
-      <button class="btn-undo" onclick="change('teleop', -1)">Undo</button>
-    </div>
-  </div>
-
-  <label class="parking-box">
-    <input type="checkbox" id="parking-check">
-    <span style="color:var(--yellow); font-weight:bold; font-size:0.8rem;">PARKING ACHIEVED (P)</span>
-  </label>
-
-  <div class="input-group">
-    <label>Match RP Total</label>
-    <input type="number" id="rp-input" value="0">
-  </div>
-  
-  <button class="btn-send" id="btn-submit" onclick="sendData()">SUBMIT TO SHEETS</button>
 </div>
 
 <script>
   let state = { auto_in: 0, auto_missed: 0, teleop: 0 };
-  
-  // URL-ul tau de la Nationala
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz96eVepKPWtpZlpaTYJYIXKzwrK4ZE6bZQoDOOSH8uncZJao0jQueFrv4YxvlEgDQ/exec";
 
   function change(key, val) {
     state[key] = Math.max(0, state[key] + val);
-    document.getElementById(`val-${key.replace('_', '-')}`).textContent = state[key];
+    const id = key.replace('_', '-');
+    document.getElementById(`val-${id}`).textContent = state[key];
   }
 
-  async function sendData() {
+  function generateReport() {
     const team = document.getElementById('team-number').value;
-    if (!team) return alert("Please enter a Team Number!");
+    if (!team) {
+        document.getElementById('team-number').style.borderColor = 'var(--red)';
+        return;
+    }
 
-    const btn = document.getElementById('btn-submit');
-    const originalText = btn.textContent;
-    btn.textContent = "SENDING...";
+    const totalAuto = state.auto_in + state.auto_missed;
+    const isP = document.getElementById('parking-check').checked;
+    const autoString = `${state.auto_in}(${totalAuto})${isP ? 'P' : ''}`;
+    const pos = document.getElementById('pos-select').value;
+    const rp = document.getElementById('rp-input').value;
+
+    document.getElementById('report-content').innerHTML = `
+      <div class="report-item">
+        <div class="report-key">Echipa Selectată</div>
+        <div class="report-val">${team} / ${pos}</div>
+      </div>
+      <div class="report-item">
+        <div class="report-key">Statistică Autonom</div>
+        <div class="report-val">${autoString}</div>
+      </div>
+      <div class="report-item">
+        <div class="report-key">Scor TeleOp</div>
+        <div class="report-val">${state.teleop} PIESE</div>
+      </div>
+      <div class="report-item">
+        <div class="report-key">Ranking Points</div>
+        <div class="report-val">${rp} RP</div>
+      </div>
+    `;
+
+    switchScreen('screen-report');
+  }
+
+  async function confirmAndSend() {
+    const btn = document.getElementById('btn-confirm');
+    btn.textContent = "UPLOADING...";
     btn.disabled = true;
 
-    const autoString = `${state.auto_in}(${state.auto_in + state.auto_missed})${document.getElementById('parking-check').checked ? 'P' : ''}`;
+    const totalAuto = state.auto_in + state.auto_missed;
+    const autoString = `${state.auto_in}(${totalAuto})${document.getElementById('parking-check').checked ? 'P' : ''}`;
 
     const payload = {
-      team: team,
+      team: document.getElementById('team-number').value,
       position: document.getElementById('pos-select').value,
       autoData: autoString,
       scor: state.teleop,
@@ -125,20 +251,41 @@
         body: JSON.stringify(payload)
       });
       
-      alert("Success! Data sent to Nationals.");
-      // Resetare formular
-      state = { auto_in: 0, auto_missed: 0, teleop: 0 };
-      document.querySelectorAll('.count-display').forEach(d => d.textContent = '0');
-      document.getElementById('team-number').value = '';
-      document.getElementById('parking-check').checked = false;
-      document.getElementById('rp-input').value = '0';
-      
+      showToast();
+      setTimeout(() => {
+        resetAndBack();
+      }, 1500);
+
     } catch (e) {
-      alert("Error connecting to server. Check your internet.");
-    } finally {
-      btn.textContent = originalText;
+      alert("Eroare de conexiune!");
+      btn.textContent = "Retry Transmission";
       btn.disabled = false;
     }
+  }
+
+  function showToast() {
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  function switchScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0,0);
+  }
+
+  function resetAndBack() {
+    state = { auto_in: 0, auto_missed: 0, teleop: 0 };
+    document.getElementById('team-number').value = '';
+    document.getElementById('rp-input').value = '0';
+    document.getElementById('parking-check').checked = false;
+    document.getElementById('val-auto-in').textContent = '0';
+    document.getElementById('val-auto-missed').textContent = '0';
+    document.getElementById('val-teleop').textContent = '0';
+    document.getElementById('btn-confirm').textContent = "Confirm & Transmit";
+    document.getElementById('btn-confirm').disabled = false;
+    switchScreen('screen-scouter');
   }
 </script>
 </body>

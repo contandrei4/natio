@@ -12,12 +12,13 @@ function saveScoutingData(e) {
   var rawSheet = ss.getSheetByName("RawData");
   if (!rawSheet) {
     rawSheet = ss.insertSheet("RawData");
-    rawSheet.appendRow(["Echipa", "R ap", "R dep", "A ap", "A dep", "Scor", "RP", "DATA"]);
+    rawSheet.appendRow(["Echipa", "R ap", "R dep", "A ap", "A dep", "Scor", "RP", "DATA", "Meci"]);
   }
   
   var data = rawSheet.getDataRange().getValues();
   var teamId = e.parameter.team.toString().trim();
   var pos = e.parameter.position; 
+  var mNum = e.parameter.matchNum || "-";
   var rowIndex = -1;
 
   for (var i = 0; i < data.length; i++) {
@@ -34,25 +35,30 @@ function saveScoutingData(e) {
     var oldAuto = rawSheet.getRange(rowIndex, targetCol).getValue().toString();
     var oldTele = rawSheet.getRange(rowIndex, 6).getValue().toString(); 
     var oldRP = rawSheet.getRange(rowIndex, 7).getValue().toString(); 
-    
+    var oldMatch = rawSheet.getRange(rowIndex, 9).getValue().toString();
+
     var newAuto = oldAuto ? oldAuto + ", " + e.parameter.autoData : e.parameter.autoData;
     var newTele = oldTele ? oldTele + ", " + e.parameter.scor : e.parameter.scor;
     var newRP = oldRP ? oldRP + ", " + e.parameter.rp : e.parameter.rp;
+    var newMatch = oldMatch ? oldMatch + ", " + mNum : mNum;
 
     rawSheet.getRange(rowIndex, targetCol).setValue("'" + newAuto.replace(/'/g, ""));
     rawSheet.getRange(rowIndex, 6).setValue("'" + newTele.replace(/'/g, ""));
     rawSheet.getRange(rowIndex, 7).setValue("'" + newRP.replace(/'/g, ""));
     rawSheet.getRange(rowIndex, 8).setValue(new Date());
+    rawSheet.getRange(rowIndex, 9).setValue("'" + newMatch.replace(/'/g, ""));
     
     return ContentService.createTextOutput("SUCCESS_UPDATED");
   } else {
-    var newRow = ["'" + teamId, "", "", "", "", "'" + e.parameter.scor, "'" + e.parameter.rp, new Date()];
+    // Rand nou: Echipa, R_ap, R_dep, A_ap, A_dep, Scor, RP, DATA, Meci
+    var newRow = ["'" + teamId, "", "", "", "", "'" + e.parameter.scor, "'" + e.parameter.rp, new Date(), "'" + mNum];
     newRow[targetCol - 1] = "'" + e.parameter.autoData;
     rawSheet.appendRow(newRow);
     return ContentService.createTextOutput("SUCCESS_ADDED");
   }
 }
 
+// scanTeamData ramane identic cu cel de data trecuta (include trenduri, max, analytics)
 function scanTeamData(teamToFind) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var rawSheet = ss.getSheetByName("RawData");
@@ -78,7 +84,6 @@ function scanTeamData(teamToFind) {
   var scores = parseList(match[5]); 
   var rps = parseList(match[6]);
 
-  // Cerința 3: Strategie din Analytics coloana D
   var strategy = "Fara Date";
   if (sheetAnalytics) {
     var aData = sheetAnalytics.getDataRange().getValues();
@@ -92,10 +97,10 @@ function scanTeamData(teamToFind) {
 
   return ContentService.createTextOutput(JSON.stringify({
     avgGeneral: getAvg(scores),
-    avgLast3: getAvg(scores.slice(-3)), // Cerința 1
-    maxAutoAp: getMax(autoAp),         // Cerința 2
-    maxAutoDep: getMax(autoDep),       // Cerința 2
-    teleopStrategy: strategy,          // Cerința 3
+    avgLast3: getAvg(scores.slice(-3)),
+    maxAutoAp: getMax(autoAp),
+    maxAutoDep: getMax(autoDep),
+    teleopStrategy: strategy,
     avgRP: getAvg(rps),
     chartData: scores.slice(-10)
   })).setMimeType(ContentService.MimeType.JSON);

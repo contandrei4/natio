@@ -6,7 +6,6 @@
 <title>Decode Counter – FRC Scouting</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  /* STILUL ORIGINAL DIN DECODE-COUNTER (4).HTML */
   :root {
     --yellow: #e8c93a;
     --black: #111;
@@ -100,8 +99,8 @@
 
   <div id="screen-scouter" class="screen">
     <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:20px;">
-      <h1 style="font-size:1.5rem">MATCH DATA</h1>
-      <span id="display-id" style="color:var(--yellow); font-size:0.7rem; font-weight:700;"></span>
+      <h1>MATCH DATA</h1>
+      <div id="display-id" style="color:var(--yellow); font-size:0.7rem; font-weight:700;"></div>
     </div>
 
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
@@ -174,7 +173,6 @@
   let state = { auto_in: 0, auto_missed: 0, teleop: 0 };
   let sessionId = "";
 
-  // URL-URILE TALE INTEGRATE
   const SCRIPT_URL_AUTH_LOG = "https://script.google.com/macros/s/AKfycbxoPEqXdcJyZvlc--Q2Fb88vYBZank5exIzt_NwPe8BB9J1wpHgkAVoY5Quze7DgqeE/exec";
   const SCRIPT_URL_NATIONALA = "https://script.google.com/macros/s/AKfycbyBRae0CXMyPozcmEEQNPU2OxqNQsDxWigg9cAsqnoeilPzUelUZKQd3ETPtligj8F-/exec";
 
@@ -187,7 +185,6 @@
     btn.disabled = true;
 
     try {
-      // Pasul 1: Verificare Scouter (GET conform codului tau)
       const response = await fetch(`${SCRIPT_URL_AUTH_LOG}?action=auth&id=${idInput}`);
       const result = await response.text();
       
@@ -247,10 +244,10 @@
     btn.disabled = true;
 
     try {
-      // Pasul 2: Logare (GET pe scriptul tau de log-uri)
+      // 1. Log activitate (GET)
       fetch(`${SCRIPT_URL_AUTH_LOG}?action=log&id=${sessionId}&ora=${ora}&meci=${team}&team=${team}`);
 
-      // Pasul 3: Trimitere date pe Nationala (POST)
+      // 2. Trimitere date agregate (POST)
       await fetch(SCRIPT_URL_NATIONALA, {
         method: 'POST',
         mode: 'no-cors',
@@ -259,17 +256,17 @@
         })
       });
 
-      alert("Match data recorded!");
+      alert("Match data sent successfully!");
       
       const log = document.createElement('div');
       log.className = 'log-entry';
-      log.textContent = `> [${ora}] Team ${team} sent by ${sessionId}`;
+      log.textContent = `> [${ora}] Team ${team} recorded.`;
       document.getElementById('logs-list').prepend(log);
       
       resetForm();
       switchScreen('screen-scouter');
     } catch (e) {
-      alert("Transmission error!");
+      alert("Error sending data.");
     } finally {
       btn.textContent = "Confirm & Send";
       btn.disabled = false;

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ro">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>DECODE HUB V7.5</title>
+<title>DECODE HUB V8.5</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -37,7 +37,7 @@
 </head>
 <body>
 
-<div id="loader">SYNCHRONIZING...</div>
+<div id="loader">SCANNING DATA...</div>
 
 <div class="container">
     <div class="nav-bar">
@@ -103,13 +103,13 @@
 
             <div class="card"><label>STRATEGIE (D)</label><div id="r-strat" style="font-size:0.85rem;">--</div></div>
             <div class="card"><label>PARCARE (F)</label><div id="r-park">--</div></div>
-            <div class="card"><label>ALTCEVA (M)</label><div id="r-alt" style="font-size:0.85rem;">--</div></div>
+            <div class="card"><label>ALTCEVA (M)</label><div id="r-alt" style="font-size:0.85rem; color:#888;">--</div></div>
         </div>
     </div>
 </div>
 
 <script>
-    const SCRIPT = "https://script.google.com/macros/s/AKfycbyPwSzQS52syFe-rUewcDRZBaBc7CEAbwAzs0uE2sgDjmsOBbJLBlfBui570HCuxEg/exec";
+    const SCRIPT = "https://script.google.com/macros/s/AKfycbw-LwWWmjecbae_5iSoX7puB0U8ZnY32Jainm46bmd7y-_9RKR20UF4cweYyKqWAGv1/exec";
     let state = { a_in: 0, a_ms: 0, tele: 0 };
     let myChart = null;
 
@@ -117,7 +117,7 @@
 
     function showReport() {
         const team = document.getElementById('t-id').value;
-        if(!team) return alert("NEED ID");
+        if(!team) return alert("INTRODU ID");
         document.getElementById('rep-team').textContent = team;
         document.getElementById('rep-auto').textContent = `${state.a_in}(${state.a_in + state.a_ms})${document.getElementById('park').checked ? 'P' : ''}`;
         document.getElementById('rep-tele').textContent = state.tele;
@@ -133,9 +133,9 @@
         const payload = { team: document.getElementById('t-id').value, position: document.getElementById('p-id').value, autoData: auto, scor: state.tele, rp: document.getElementById('rp-val').value };
         try {
             await fetch(SCRIPT, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-            alert("UPLINK SUCCESSFUL");
+            alert("DATE TRIMISE!");
             location.reload();
-        } catch(e) { alert("ERROR"); document.getElementById('loader').style.display = 'none'; }
+        } catch(e) { alert("EROARE"); document.getElementById('loader').style.display = 'none'; }
     }
 
     function toggleSearch() {
@@ -151,7 +151,7 @@
         try {
             const response = await fetch(`${SCRIPT}?team=${t}`);
             const d = await response.json();
-            if(d.error) { alert("NOT FOUND"); }
+            if(d.error) { alert("ECHIPA NU A FOST GASITA"); }
             else {
                 document.getElementById('results').style.display = 'block';
                 document.getElementById('r-avg-gen').textContent = d.avgGeneral;
@@ -161,10 +161,9 @@
                 document.getElementById('r-strat').textContent = d.strategie;
                 document.getElementById('r-park').textContent = d.parcare;
                 document.getElementById('r-alt').textContent = d.altceva;
-                
                 updateChart(d.chartData);
             }
-        } catch(e) { alert("SCAN FAILED"); }
+        } catch(e) { alert("EROARE SCANARE"); }
         document.getElementById('loader').style.display = 'none';
     }
 
@@ -176,14 +175,14 @@
             data: {
                 labels: dataPoints.map((_, i) => i + 1),
                 datasets: [{
-                    label: 'Score',
+                    label: 'Scor',
                     data: dataPoints,
                     borderColor: '#e8c93a',
                     backgroundColor: 'rgba(232, 201, 58, 0.1)',
                     borderWidth: 3,
                     tension: 0.3,
                     fill: true,
-                    pointRadius: 4,
+                    pointRadius: 5,
                     pointBackgroundColor: '#e8c93a'
                 }]
             },

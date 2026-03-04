@@ -3,59 +3,136 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>DECODE HUB V4</title>
+<title>DECODE HUB V4.2 - NATIONALS</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  :root { --yellow: #e8c93a; --black: #0a0a0a; --white: #f5f5f0; --gray: #1a1a1a; --border: #333; --red: #ff4d4d; --green: #00e676; --glow: 0 0 15px rgba(232, 201, 58, 0.3); }
+  :root { 
+    --yellow: #e8c93a; 
+    --black: #0a0a0a; 
+    --white: #f5f5f0; 
+    --gray: #1a1a1a; 
+    --border: #333; 
+    --red: #ff4d4d; 
+    --green: #00e676; 
+    --glow: 0 0 15px rgba(232, 201, 58, 0.3); 
+  }
+
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  body { background: var(--black); color: var(--white); font-family: 'Space Mono', monospace; background-image: radial-gradient(circle at 50% 50%, #151515 0%, #0a0a0a 100%); }
+  
+  body { 
+    background: var(--black); 
+    color: var(--white); 
+    font-family: 'Space Mono', monospace; 
+    background-image: radial-gradient(circle at 50% 50%, #151515 0%, #0a0a0a 100%);
+    overflow-x: hidden;
+  }
 
-  .nav-bar { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 2px solid var(--yellow); background: #000; position: sticky; top: 0; z-index: 100; }
+  /* Header Section */
+  .nav-bar { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 20px; 
+    border-bottom: 2px solid var(--yellow); 
+    background: #000; 
+    position: sticky; 
+    top: 0; 
+    z-index: 100; 
+  }
+  
   h1 { font-family: 'Bebas Neue'; font-size: 2.5rem; color: var(--yellow); letter-spacing: 2px; text-shadow: var(--glow); }
-  .btn-nav { background: transparent; border: 1px solid var(--yellow); color: var(--yellow); padding: 8px 15px; font-family: 'Bebas Neue'; font-size: 1.1rem; cursor: pointer; }
 
+  .btn-nav { 
+    background: transparent; 
+    border: 1px solid var(--yellow); 
+    color: var(--yellow); 
+    padding: 8px 15px; 
+    font-family: 'Bebas Neue'; 
+    font-size: 1.1rem; 
+    cursor: pointer; 
+  }
+
+  /* Screen Management */
   .container { width: 100%; max-width: 450px; margin: auto; min-height: 100vh; }
-  .screen { display: none; padding: 25px 20px; animation: scanIn 0.5s ease; }
+  .screen { display: none; padding: 25px 20px; animation: scanIn 0.4s ease; }
   .screen.active { display: block; }
-  @keyframes scanIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  
+  @keyframes scanIn { 
+    from { opacity: 0; transform: translateY(10px); } 
+    to { opacity: 1; transform: translateY(0); } 
+  }
 
   .sub { font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 25px; display: block; text-align: center; }
-  .card { background: rgba(26, 26, 26, 0.8); border: 1px solid var(--border); padding: 20px; margin-bottom: 15px; position: relative; }
+
+  /* Input & Cards */
+  .card { 
+    background: rgba(26, 26, 26, 0.8); 
+    border: 1px solid var(--border); 
+    padding: 20px; 
+    margin-bottom: 15px; 
+    position: relative; 
+  }
   .card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--yellow); }
+  
   label { font-size: 0.7rem; color: var(--yellow); text-transform: uppercase; display: block; margin-bottom: 10px; font-weight: bold; }
   
-  input, select { width: 100%; background: #000; border: 1px solid #444; padding: 15px; color: #fff; font-family: 'Space Mono'; outline: none; font-size: 1.1rem; }
+  input, select { 
+    width: 100%; background: #000; border: 1px solid #444; padding: 15px; 
+    color: #fff; font-family: 'Space Mono'; outline: none; font-size: 1.1rem; 
+  }
 
+  /* Counters */
   .counter-row { display: flex; align-items: center; gap: 15px; }
-  .btn-act { flex: 2; background: var(--yellow); color: #000; border: none; padding: 18px; font-family: 'Bebas Neue'; font-size: 1.6rem; cursor: pointer; box-shadow: var(--glow); }
-  .btn-undo { flex: 1; background: #222; color: #666; border: 1px solid #333; padding: 18px; font-size: 0.8rem; font-family: 'Space Mono'; cursor: pointer; }
+  .btn-act { 
+    flex: 2; background: var(--yellow); color: #000; border: none; padding: 18px; 
+    font-family: 'Bebas Neue'; font-size: 1.6rem; cursor: pointer; box-shadow: var(--glow); 
+  }
+  .btn-act:active { transform: scale(0.98); }
+  
+  .btn-undo { 
+    flex: 1; background: #222; color: #666; border: 1px solid #333; 
+    padding: 18px; font-size: 0.8rem; font-family: 'Space Mono'; cursor: pointer; 
+  }
+
   .val { font-family: 'Bebas Neue'; font-size: 3rem; min-width: 60px; text-align: center; }
 
-  /* Stil specific pentru Parking compact */
+  /* Parking Styling */
   .park-container { display: flex; align-items: center; gap: 10px; padding: 15px 20px; }
   .park-container label { margin-bottom: 0; cursor: pointer; }
-  input[type="checkbox"] { width: 22px; height: 22px; cursor: pointer; accent-color: var(--yellow); width: auto; }
+  input[type="checkbox"] { width: 22px; height: 22px; cursor: pointer; accent-color: var(--yellow); }
 
+  /* Report Screen */
   .report-box { background: #000; border: 1px solid var(--yellow); padding: 25px; margin: 25px 0; }
   .report-line { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #222; }
   .rep-key { font-size: 0.8rem; color: #888; text-transform: uppercase; }
   .rep-val { color: var(--yellow); font-family: 'Bebas Neue'; font-size: 1.8rem; }
 
-  #success-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 1000; flex-direction: column; align-items: center; justify-content: center; }
-  .success-icon { font-size: 6rem; color: var(--green); text-shadow: 0 0 30px var(--green); margin-bottom: 20px; animation: pop 0.5s ease; }
+  /* Success Overlay */
+  #success-overlay { 
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+    background: #000; z-index: 1000; flex-direction: column; align-items: center; justify-content: center; 
+  }
+  .success-icon { 
+    font-size: 6rem; color: var(--green); text-shadow: 0 0 30px var(--green); 
+    margin-bottom: 20px; animation: pop 0.5s ease; 
+  }
   @keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
 
-  #loader { display: none; position: fixed; top: 85px; left: 50%; transform: translateX(-50%); background: var(--yellow); color: #000; padding: 8px 20px; font-weight: bold; z-index: 200; font-size: 0.75rem; border-radius: 20px; }
+  #loader { 
+    display: none; position: fixed; top: 85px; left: 50%; transform: translateX(-50%); 
+    background: var(--yellow); color: #000; padding: 8px 20px; 
+    font-weight: bold; z-index: 200; font-size: 0.75rem; border-radius: 20px; 
+  }
 </style>
 </head>
 <body>
 
-<div id="loader">UPLINKING...</div>
+<div id="loader">COMMUNICATING...</div>
 
 <div id="success-overlay">
     <div class="success-icon">✓</div>
     <h1 style="color: var(--white); font-size: 2.5rem; letter-spacing: 4px;">MISSION SUCCESSFUL</h1>
-    <p style="color: var(--yellow); font-size: 0.8rem; margin-top: 15px; letter-spacing: 3px; opacity: 0.7;">RESETTING TERMINAL...</p>
+    <p style="color: var(--yellow); font-size: 0.8rem; margin-top: 15px; letter-spacing: 3px; opacity: 0.7;">REBOOTING TERMINAL...</p>
 </div>
 
 <div class="container">
@@ -130,56 +207,83 @@
             <div class="report-line"><span class="rep-key">POS</span><span class="rep-val" id="rep-pos">--</span></div>
         </div>
         <button class="btn-act" style="width:100%; height: 70px; font-size: 1.8rem;" onclick="confirmAndSend()">INITIATE UPLINK</button>
-        <button class="btn-undo" style="width:100%; margin-top:15px; height: 50px;" onclick="backToScout()">EDIT</button>
+        <button class="btn-undo" style="width:100%; margin-top:15px; height: 50px;" onclick="backToScout()">EDIT DATA</button>
     </div>
 
     <div id="screen-search" class="screen">
-        <span class="sub">// DATABASE //</span>
+        <span class="sub">// DATABASE QUERY //</span>
         <div style="display:flex; gap:12px; margin-bottom:25px;">
             <input type="number" id="q-team" placeholder="ID...">
             <button class="btn-act" style="padding:0 30px; flex:none; width: auto;" onclick="searchTeam()">GO</button>
         </div>
+        
         <div id="results" style="display:none;">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
-                <div style="background:#000; border:1px solid #333; padding:15px; text-align:center;"><label>OPR</label><div id="r-opr" style="font-family:'Bebas Neue'; font-size:2rem; color:var(--yellow);">--</div></div>
-                <div style="background:#000; border:1px solid #333; padding:15px; text-align:center;"><label>AVG</label><div id="r-at" style="font-family:'Bebas Neue'; font-size:2rem; color:var(--yellow);">--</div></div>
+            <div class="card" style="text-align:center;">
+                <label>AVERAGE TELEOP SCORE</label>
+                <div id="r-at" style="font-family:'Bebas Neue'; font-size:3.5rem; color:var(--yellow); text-shadow: var(--glow);">--</div>
             </div>
-            <label>LAST 3 MATCHES</label><div id="r-s3" style="font-family:'Bebas Neue'; font-size:1.3rem; margin-bottom:15px; background:#111; padding:10px; color:var(--yellow);">--</div>
+            
+            <div class="card">
+                <label>LAST 3 MATCH HISTORY</label>
+                <div id="r-s3" style="font-family:'Bebas Neue'; font-size:1.6rem; color:var(--white); letter-spacing: 2px; padding-top: 5px;">--</div>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    const SCRIPT = "https://script.google.com/macros/s/AKfycbyoReeVkb-J-Br5iO0-bZm8zbrMgoRrCUTzZKWEpSUnY0dNt6R9JTVAKO6bM90GZCoi/exec";
+    const SCRIPT = "https://script.google.com/macros/s/AKfycbzHQ1TQZMWzonzIeF2b_NyETttEkcctkBpOGeAmhlzI3kHTmxW9hw6VhZO-TTOHKU27/exec";
+    
     let state = { a_in: 0, a_ms: 0, tele: 0 };
 
-    function upd(k, v) { state[k] = Math.max(0, state[k] + v); document.getElementById('v-'+k).textContent = state[k]; }
+    function upd(k, v) { 
+        state[k] = Math.max(0, state[k] + v); 
+        document.getElementById('v-'+k).textContent = state[k]; 
+    }
 
     function showReport() {
         const team = document.getElementById('t-id').value;
         if(!team) return alert("TEAM ID REQUIRED");
+        
         const totalAuto = state.a_in + state.a_ms;
         const parkStr = document.getElementById('park').checked ? 'P' : '';
+        const rawAuto = `${state.a_in}(${totalAuto})${parkStr}`;
+
         document.getElementById('rep-team').textContent = team;
-        document.getElementById('rep-auto-raw').textContent = `${state.a_in}(${totalAuto})${parkStr}`;
+        document.getElementById('rep-auto-raw').textContent = rawAuto;
         document.getElementById('rep-tele').textContent = state.tele;
         document.getElementById('rep-pos').textContent = document.getElementById('p-id').value;
+
         document.getElementById('screen-scout').classList.remove('active');
         document.getElementById('screen-report').classList.add('active');
     }
 
-    function backToScout() { document.getElementById('screen-report').classList.remove('active'); document.getElementById('screen-scout').classList.add('active'); }
+    function backToScout() {
+        document.getElementById('screen-report').classList.remove('active');
+        document.getElementById('screen-scout').classList.add('active');
+    }
 
     async function confirmAndSend() {
         document.getElementById('loader').style.display = 'block';
         const totalAuto = state.a_in + state.a_ms;
         const autoData = `${state.a_in}(${totalAuto})${document.getElementById('park').checked ? 'P' : ''}`;
-        const payload = { team: document.getElementById('t-id').value, position: document.getElementById('p-id').value, autoData: autoData, scor: state.tele, rp: document.getElementById('rp-val').value };
+        
+        const payload = { 
+            team: document.getElementById('t-id').value, 
+            position: document.getElementById('p-id').value, 
+            autoData: autoData, 
+            scor: state.tele, 
+            rp: document.getElementById('rp-val').value 
+        };
+
         try {
             await fetch(SCRIPT, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
             document.getElementById('success-overlay').style.display = 'flex';
             setTimeout(() => { location.reload(); }, 1500);
-        } catch(e) { alert("ERROR"); document.getElementById('loader').style.display = 'none'; }
+        } catch(e) { 
+            alert("UPLINK ERROR"); 
+            document.getElementById('loader').style.display = 'none';
+        }
     }
 
     function toggleSearch() {
@@ -192,16 +296,28 @@
     async function searchTeam() {
         const t = document.getElementById('q-team').value;
         if(!t) return;
-        document.getElementById('loader').style.display = 'block';
+        
+        const loader = document.getElementById('loader');
+        const resultsDiv = document.getElementById('results');
+        
+        loader.style.display = 'block';
+        resultsDiv.style.display = 'none';
+
         try {
-            const res = await fetch(`${SCRIPT}?team=${t}`);
-            const d = await res.json();
-            document.getElementById('results').style.display = 'block';
-            document.getElementById('r-opr').textContent = d.opr || "N/A";
-            document.getElementById('r-at').textContent = d.avgTotal || "0";
-            document.getElementById('r-s3').textContent = d.last3Scores || "--";
-        } catch(e) { alert("ERROR"); }
-        document.getElementById('loader').style.display = 'none';
+            const response = await fetch(`${SCRIPT}?team=${t}`);
+            const d = await response.json();
+            
+            if(d.error) {
+                alert("TEAM NOT FOUND");
+            } else {
+                resultsDiv.style.display = 'block';
+                document.getElementById('r-at').textContent = d.avgTotal;
+                document.getElementById('r-s3').textContent = d.last3Scores;
+            }
+        } catch(e) {
+            alert("DATABASE OFFLINE");
+        }
+        loader.style.display = 'none';
     }
 </script>
 </body>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ro">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,7 +26,8 @@
     justify-content: center;
     align-items: flex-start;
     padding: 24px 16px;
-    background-image: radial-gradient(circle at 20% 20%, rgba(232,201,58,0.05) 0%, transparent 50%);
+    background-image: 
+      radial-gradient(circle at 20% 20%, rgba(232,201,58,0.05) 0%, transparent 50%);
   }
 
   .app-container {
@@ -61,7 +62,7 @@
   input:focus { border-color: var(--yellow); background: #333; }
 
   .counter-card { background: #1a1a1a; border: 1px solid #333; padding: 20px; margin-bottom: 16px; position: relative; }
-  .counter-label { font-family: 'Bebas Neue'; font-size: 1.2rem; color: #888; margin-bottom: 12px; display: flex; justify-content: space-between; }
+  .counter-label { font-family: 'Bebas Neue'; font-size: 1.2rem; color: #888; margin-bottom: 12px; }
   
   .controls { display: flex; align-items: center; gap: 16px; }
   .btn-main { flex-grow: 1; background: var(--yellow); color: black; border: none; padding: 16px; font-family: 'Bebas Neue'; font-size: 1.5rem; cursor: pointer; transition: 0.1s; }
@@ -80,13 +81,12 @@
     cursor: pointer;
   }
 
-  /* REPORT STYLING */
+  /* Report Styles */
   .report-box { background: var(--gray); border-left: 4px solid var(--yellow); padding: 20px; margin-bottom: 24px; }
   .report-item { margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
   .report-val { font-family: 'Bebas Neue'; font-size: 2rem; color: var(--yellow); line-height: 1; }
   .report-key { font-size: 0.65rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
 
-  /* CONFIRMATION TOAST */
   #toast {
     position: fixed;
     bottom: 20px;
@@ -112,35 +112,35 @@
   
   <div id="screen-scouter" class="screen active">
     <h1>FTC NATIONAL</h1>
-    <div class="subtitle">Scouting Session v2.0</div>
+    <div class="subtitle">Match Intelligence v3.5</div>
 
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
         <div class="input-group">
-            <label>Team Number</label>
-            <input type="number" id="team-number" placeholder="0000">
+            <label>Team ID</label>
+            <input type="number" id="team-number" placeholder="00000" oninput="if(this.value.length > 5) this.value = this.value.slice(0, 5);">
         </div>
         <div class="input-group">
             <label>Position</label>
             <select id="pos-select">
-                <option value="R ap">Red Wing (R ap)</option>
-                <option value="R dep">Red Back (R dep)</option>
-                <option value="A ap">Blue Wing (A ap)</option>
-                <option value="A dep">Blue Back (A dep)</option>
+                <option value="R ap">R ap</option>
+                <option value="R dep">R dep</option>
+                <option value="A ap">A ap</option>
+                <option value="A dep">A dep</option>
             </select>
         </div>
     </div>
 
     <div class="counter-card">
-      <div class="counter-label">AUTO PIECES IN</div>
+      <div class="counter-label">AUTO PIECES SCORED</div>
       <div class="controls">
-        <button class="btn-main" onclick="change('auto_in', 1)">+1 SCORE</button>
+        <button class="btn-main" onclick="change('auto_in', 1)">+1 PIECE</button>
         <div class="count-display" id="val-auto-in">0</div>
         <button class="btn-undo" onclick="change('auto_in', -1)">Undo</button>
       </div>
     </div>
 
     <div class="counter-card" style="border-color: var(--red);">
-      <div class="counter-label" style="color:var(--red)">AUTO MISSED</div>
+      <div class="counter-label" style="color:var(--red)">AUTO PIECES MISSED</div>
       <div class="controls">
         <button class="btn-main" style="background:var(--red); color:white" onclick="change('auto_missed', 1)">+1 MISS</button>
         <div class="count-display" id="val-auto-missed">0</div>
@@ -149,7 +149,7 @@
     </div>
 
     <div class="counter-card" style="border-color: var(--green);">
-      <div class="counter-label" style="color:var(--green)">TELEOP TOTAL SCORE</div>
+      <div class="counter-label" style="color:var(--green)">TELEOP SCORE</div>
       <div class="controls">
         <button class="btn-main" style="background:var(--green); color:white" onclick="change('teleop', 1)">+1 PIECE</button>
         <div class="count-display" id="val-teleop">0</div>
@@ -159,11 +159,11 @@
 
     <label class="parking-row">
       <input type="checkbox" id="parking-check" style="width:20px; height:20px; accent-color:var(--yellow)">
-      <span style="color:var(--yellow); font-size:0.8rem; font-weight:700;">PARKING BIFAT (P)</span>
+      <span style="color:var(--yellow); font-size:0.8rem; font-weight:700;">PARKING (P)</span>
     </label>
 
     <div class="input-group">
-      <label>RPs Meci (Ranking Points)</label>
+      <label>Match RP (Ranking Points)</label>
       <input type="number" id="rp-input" value="0">
     </div>
 
@@ -171,21 +171,20 @@
   </div>
 
   <div id="screen-report" class="screen">
-    <h1>DATA REPORT</h1>
-    <div class="subtitle" id="report-meta">Verification Required</div>
+    <h1>MATCH REPORT</h1>
+    <div class="subtitle">Final Data Verification</div>
     
-    <div class="report-box" id="report-content">
-      </div>
+    <div class="report-box" id="report-content"></div>
 
     <button class="btn-main" id="btn-confirm" style="width:100%; padding:20px; margin-bottom:12px;" onclick="confirmAndSend()">Confirm & Transmit</button>
-    <button class="btn-undo" style="width:100%;" onclick="switchScreen('screen-scouter')">Edit Data</button>
+    <button class="btn-undo" style="width:100%;" onclick="switchScreen('screen-scouter')">Back to Edit</button>
   </div>
 
 </div>
 
 <script>
   let state = { auto_in: 0, auto_missed: 0, teleop: 0 };
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz96eVepKPWtpZlpaTYJYIXKzwrK4ZE6bZQoDOOSH8uncZJao0jQueFrv4YxvlEgDQ/exec";
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwWQ5vBixTArG2xCcHgp9r1nR7qC0NXlr33dYoqLyDBj-kcS4cAa5wdtEphDWPmXfk8/exec";
 
   function change(key, val) {
     state[key] = Math.max(0, state[key] + val);
@@ -195,10 +194,7 @@
 
   function generateReport() {
     const team = document.getElementById('team-number').value;
-    if (!team) {
-        document.getElementById('team-number').style.borderColor = 'var(--red)';
-        return;
-    }
+    if (!team) return alert("Please enter Team ID");
 
     const totalAuto = state.auto_in + state.auto_missed;
     const isP = document.getElementById('parking-check').checked;
@@ -208,19 +204,19 @@
 
     document.getElementById('report-content').innerHTML = `
       <div class="report-item">
-        <div class="report-key">Echipa Selectată</div>
+        <div class="report-key">Team & Position</div>
         <div class="report-val">${team} / ${pos}</div>
       </div>
       <div class="report-item">
-        <div class="report-key">Statistică Autonom</div>
+        <div class="report-key">Auto Performance</div>
         <div class="report-val">${autoString}</div>
       </div>
       <div class="report-item">
-        <div class="report-key">Scor TeleOp</div>
-        <div class="report-val">${state.teleop} PIESE</div>
+        <div class="report-key">TeleOp Performance</div>
+        <div class="report-val">${state.teleop} PIECES</div>
       </div>
       <div class="report-item">
-        <div class="report-key">Ranking Points</div>
+        <div class="report-key">Total RPs</div>
         <div class="report-val">${rp} RP</div>
       </div>
     `;
@@ -230,7 +226,7 @@
 
   async function confirmAndSend() {
     const btn = document.getElementById('btn-confirm');
-    btn.textContent = "UPLOADING...";
+    btn.textContent = "TRANSMITTING...";
     btn.disabled = true;
 
     const totalAuto = state.auto_in + state.auto_missed;
@@ -252,12 +248,9 @@
       });
       
       showToast();
-      setTimeout(() => {
-        resetAndBack();
-      }, 1500);
-
+      setTimeout(resetAndBack, 1500);
     } catch (e) {
-      alert("Eroare de conexiune!");
+      alert("Transmission Failure! Check Internet.");
       btn.textContent = "Retry Transmission";
       btn.disabled = false;
     }

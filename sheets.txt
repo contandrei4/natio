@@ -1,110 +1,88 @@
 function doGet(e) {
   try {
-    // Verificăm dacă primim date de scouting sau cerere de scanare
-    if (e.parameter.scor !== undefined) {
-      return saveScoutingData(e);
-    } else if (e.parameter.team) {
-      return scanTeamData(e.parameter.team);
+    const team = e.parameter.team;
+    const intel = e.parameter.intel;
+
+    if (intel === "true") {
+      const res = scanTeamData(team);
+      return ContentService.createTextOutput(JSON.stringify(res)).setMimeType(ContentService.MimeType.JSON);
     }
-    return ContentService.createTextOutput("Eroare: Lipsesc parametrii.").setMimeType(ContentService.MimeType.TEXT);
+
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName("RawData");
+    const data = sheet.getDataRange().getValues();
+    const pos = e.parameter.position; 
+    const autoData = e.parameter.autoData; 
+    const scorTele = e.parameter.scor;
+    const rp = e.parameter.rp;
+    const searchId = String(team).trim();
+
+    let rowIndex = -1;
+    for (let i = 1; i < data.length; i++) {
+      if (String(data[i][0]).split('.')[0].trim() === searchId) {
+        rowIndex = i + 1; 
+        break;
+      }
+    }
+
+    if (rowIndex !== -1) {
+      updateCellWithComma(sheet, rowIndex, 6, scorTele);
+      updateCellWithComma(sheet, rowIndex, 7, rp);
+      updateCellWithComma(sheet, rowIndex, 9, pos + " " + autoData);
+      let colIdx = (pos === "R ap") ? 2 : (pos === "R dep") ? 3 : (pos === "A ap") ? 4 : 5;
+      updateCellWithComma(sheet, rowIndex, colIdx, autoData);
+      sheet.getRange(rowIndex, 8).setValue(new Date());
+    } else {
+      const lastRow = sheet.getLastRow() + 1;
+      sheet.getRange(lastRow, 1).setValue(team).setNumberFormat("@");
+      let colIdx = (pos === "R ap") ? 2 : (pos === "R dep") ? 3 : (pos === "A ap") ? 4 : 5;
+      sheet.getRange(lastRow, colIdx).setValue(autoData).setNumberFormat("@");
+      sheet.getRange(lastRow, 6).setValue(scorTele).setNumberFormat("@");
+      sheet.getRange(lastRow, 7).setValue(rp).setNumberFormat("@");
+      sheet.getRange(lastRow, 8).setValue(new Date());
+      sheet.getRange(lastRow, 9).setValue(pos + " " + autoData).setNumberFormat("@");
+    }
+    return ContentService.createTextOutput("SUCCESS").setMimeType(ContentService.MimeType.TEXT);
   } catch (err) {
-    return ContentService.createTextOutput("Eroare Script: " + err.toString()).setMimeType(ContentService.MimeType.TEXT);
+    return ContentService.createTextOutput(JSON.stringify({error: err.message})).setMimeType(ContentService.MimeType.JSON);
   }
 }
 
-function saveScoutingData(e) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var rawSheet = ss.getSheetByName("RawData");
-  
-  // Creăm sheet-ul dacă nu există
-  if (!rawSheet) {
-    rawSheet = ss.insertSheet("RawData");
-    rawSheet.appendRow(["Echipa", "R ap", "R dep", "A ap", "A dep", "Scor", "RP", "DATA", "Meci: Auto"]);
+function updateCellWithComma(sheet, row, col, newValue) {
+  let range = sheet.getRange(row, col);
+  range.setNumberFormat("@"); 
+  let oldValue = String(range.getValue() || "").trim();
+  let updatedValue = oldValue ? oldValue + ", " + newValue : newValue;
+  range.setValue(updatedValue);
+}
+
+function scanTeamData(teamId) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const rawSheet = ss.getSheetByName("RawData");
+  const analyticsSheet = ss.getSheetByName("Analytics");
+  const searchId = String(teamId).trim();
+  const data = rawSheet.getDataRange().getValues();
+  let targetRow = null;
+  for (let i = 1; i < data.length; i++) {
+    if (String(data[i][0]).split('.')[0].trim() === searchId) { targetRow = data[i]; break; }
   }
-  
-  var teamId = e.parameter.team ? e.parameter.team.toString().trim() : "0";
-  var pos = e.parameter.position || "R ap"; 
-  var mNum = e.parameter.matchNum || "?";
-  var autoData = e.parameter.autoData || "0(0)";
-  var teleScor = e.parameter.scor || "0";
-  var rp = e.parameter.rp || "0";
-  
-  // Determinăm alianța din prima literă a poziției (R sau A)
-  var allianceLetter = pos.charAt(0); 
-  var matchAutoEntry = allianceLetter + mNum + ": " + autoData;
-
-  var data = rawSheet.getDataRange().getValues();
-  var rowIndex = -1;
-
-  // Căutăm dacă echipa există deja
-  for (var i = 0; i < data.length; i++) {
-    if (data[i][0].toString().replace(/'/g, "").trim() === teamId) {
-      rowIndex = i + 1;
-      break;
+  if (!targetRow) return { error: "Echipa " + searchId + " nu are date." };
+  const scoresArray = String(targetRow[5]).split(",").map(s => Number(s.trim())).filter(n => !isNaN(n));
+  const autoEntries = String(targetRow[8]).split(",");
+  const autoPoints = autoEntries.map(e => {
+    let m = e.match(/\d+/);
+    return m ? parseInt(m[0]) : 0;
+  });
+  let strategy = "Informație indisponibilă";
+  if (analyticsSheet) {
+    const aData = analyticsSheet.getDataRange().getValues();
+    for (let j = 1; j < aData.length; j++) {
+      if (String(aData[j][0]).split('.')[0].trim() === searchId) { strategy = aData[j][3] || "Fara text"; break; }
     }
   }
-
-  var colMap = { "R ap": 2, "R dep": 3, "A ap": 4, "A dep": 5 };
-  var targetCol = colMap[pos] || 2; 
-
-  if (rowIndex !== -1) {
-    // Actualizăm rândul existent prin concatenare
-    var oldAuto = rawSheet.getRange(rowIndex, targetCol).getValue().toString();
-    var oldTele = rawSheet.getRange(rowIndex, 6).getValue().toString(); 
-    var oldRP = rawSheet.getRange(rowIndex, 7).getValue().toString(); 
-    var oldMatchInfo = rawSheet.getRange(rowIndex, 9).getValue().toString();
-
-    var newAuto = oldAuto ? oldAuto + ", " + autoData : autoData;
-    var newTele = oldTele ? oldTele + ", " + teleScor : teleScor;
-    var newRP = oldRP ? oldRP + ", " + rp : rp;
-    var newMatchInfo = oldMatchInfo ? oldMatchInfo + ", " + matchAutoEntry : matchAutoEntry;
-
-    rawSheet.getRange(rowIndex, targetCol).setValue("'" + newAuto.replace(/'/g, ""));
-    rawSheet.getRange(rowIndex, 6).setValue("'" + newTele.replace(/'/g, ""));
-    rawSheet.getRange(rowIndex, 7).setValue("'" + newRP.replace(/'/g, ""));
-    rawSheet.getRange(rowIndex, 8).setValue(new Date());
-    rawSheet.getRange(rowIndex, 9).setValue("'" + newMatchInfo.replace(/'/g, ""));
-    
-    return ContentService.createTextOutput("SUCCESS_UPDATED");
-  } else {
-    // Adăugăm un rând nou
-    var newRow = ["'" + teamId, "", "", "", "", "'" + teleScor, "'" + rp, new Date(), "'" + matchAutoEntry];
-    newRow[targetCol - 1] = "'" + autoData;
-    rawSheet.appendRow(newRow);
-    return ContentService.createTextOutput("SUCCESS_ADDED");
-  }
-}
-
-function scanTeamData(teamToFind) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var rawSheet = ss.getSheetByName("RawData");
-  if (!rawSheet) return ContentService.createTextOutput(JSON.stringify({error: true})).setMimeType(ContentService.MimeType.JSON);
-  
-  var rawVals = rawSheet.getDataRange().getValues();
-  var match = rawVals.find(row => row[0].toString().replace(/'/g, "").trim() === teamToFind.toString().trim());
-  
-  if (!match) return ContentService.createTextOutput(JSON.stringify({error: true})).setMimeType(ContentService.MimeType.JSON);
-
-  const parseList = (val) => {
-    if (!val) return [];
-    return val.toString().replace(/'/g, "").split(/[\s,]+/).map(n => {
-      let num = parseFloat(n.split('(')[0]); 
-      return isNaN(num) ? null : num;
-    }).filter(n => n !== null);
+  return {
+    avgGeneral: (scoresArray.reduce((a,b)=>a+b,0)/Math.max(scoresArray.length, 1)).toFixed(1),
+    avgLast3: (scoresArray.slice(-3).reduce((a,b)=>a+b,0)/Math.min(scoresArray.length, 3)).toFixed(1),
+    strategy: strategy, chartDataTele: scoresArray, chartDataAuto: autoPoints
   };
-
-  const getAvg = (arr) => arr.length > 0 ? (arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(1) : "0.0";
-  const getMax = (arr) => arr.length > 0 ? Math.max(...arr) : 0;
-
-  var autoAp = parseList(match[1]).concat(parseList(match[3])); 
-  var autoDep = parseList(match[2]).concat(parseList(match[4])); 
-  var scores = parseList(match[5]); 
-  var rps = parseList(match[6]);
-
-  return ContentService.createTextOutput(JSON.stringify({
-    avgGeneral: getAvg(scores),
-    maxAutoAp: getMax(autoAp),
-    maxAutoDep: getMax(autoDep),
-    chartData: scores.slice(-10)
-  })).setMimeType(ContentService.MimeType.JSON);
 }

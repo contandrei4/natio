@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>DECODE HUB V8.5</title>
+<title>DECODE HUB V9.0</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -37,7 +37,7 @@
 </head>
 <body>
 
-<div id="loader">SCANNING DATA...</div>
+<div id="loader">SEARCHING...</div>
 
 <div class="container">
     <div class="nav-bar">
@@ -87,12 +87,12 @@
         
         <div id="results" style="display:none;">
             <div class="grid-2">
-                <div class="card" style="text-align:center;"><label>AVG SCORE (ALL)</label><div id="r-avg-gen" class="val-big">--</div></div>
+                <div class="card" style="text-align:center;"><label>AVG SCORE (TOT)</label><div id="r-avg-gen" class="val-big">--</div></div>
                 <div class="card" style="text-align:center;"><label>AVG SCORE (L3)</label><div id="r-avg-l3" class="val-big" style="color:var(--green);">--</div></div>
             </div>
 
             <div class="card">
-                <label>PERFORMANCE CHART (LAST 10)</label>
+                <label>EVOLUTIE SCOR</label>
                 <div style="height: 180px;"><canvas id="scoreChart"></canvas></div>
             </div>
 
@@ -103,13 +103,12 @@
 
             <div class="card"><label>STRATEGIE (D)</label><div id="r-strat" style="font-size:0.85rem;">--</div></div>
             <div class="card"><label>PARCARE (F)</label><div id="r-park">--</div></div>
-            <div class="card"><label>ALTCEVA (M)</label><div id="r-alt" style="font-size:0.85rem; color:#888;">--</div></div>
         </div>
     </div>
 </div>
 
 <script>
-    const SCRIPT = "https://script.google.com/macros/s/AKfycbw-LwWWmjecbae_5iSoX7puB0U8ZnY32Jainm46bmd7y-_9RKR20UF4cweYyKqWAGv1/exec";
+    const SCRIPT = "https://script.google.com/macros/s/AKfycbxgvo05NcEiYS_6p-GtxtMWPh21lRJ8J9w791-JwLawI5vLGwR1sEBwnCKHp_SWyrSS/exec";
     let state = { a_in: 0, a_ms: 0, tele: 0 };
     let myChart = null;
 
@@ -117,7 +116,7 @@
 
     function showReport() {
         const team = document.getElementById('t-id').value;
-        if(!team) return alert("INTRODU ID");
+        if(!team) return alert("ID Lipsa!");
         document.getElementById('rep-team').textContent = team;
         document.getElementById('rep-auto').textContent = `${state.a_in}(${state.a_in + state.a_ms})${document.getElementById('park').checked ? 'P' : ''}`;
         document.getElementById('rep-tele').textContent = state.tele;
@@ -133,7 +132,7 @@
         const payload = { team: document.getElementById('t-id').value, position: document.getElementById('p-id').value, autoData: auto, scor: state.tele, rp: document.getElementById('rp-val').value };
         try {
             await fetch(SCRIPT, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-            alert("DATE TRIMISE!");
+            alert("TRIMIS!");
             location.reload();
         } catch(e) { alert("EROARE"); document.getElementById('loader').style.display = 'none'; }
     }
@@ -151,7 +150,7 @@
         try {
             const response = await fetch(`${SCRIPT}?team=${t}`);
             const d = await response.json();
-            if(d.error) { alert("ECHIPA NU A FOST GASITA"); }
+            if(d.error) { alert("Nu s-au gasit date."); }
             else {
                 document.getElementById('results').style.display = 'block';
                 document.getElementById('r-avg-gen').textContent = d.avgGeneral;
@@ -160,10 +159,9 @@
                 document.getElementById('r-dep').textContent = d.avgAutoDep;
                 document.getElementById('r-strat').textContent = d.strategie;
                 document.getElementById('r-park').textContent = d.parcare;
-                document.getElementById('r-alt').textContent = d.altceva;
                 updateChart(d.chartData);
             }
-        } catch(e) { alert("EROARE SCANARE"); }
+        } catch(e) { alert("Eroare Scanare."); }
         document.getElementById('loader').style.display = 'none';
     }
 
@@ -175,15 +173,13 @@
             data: {
                 labels: dataPoints.map((_, i) => i + 1),
                 datasets: [{
-                    label: 'Scor',
                     data: dataPoints,
                     borderColor: '#e8c93a',
                     backgroundColor: 'rgba(232, 201, 58, 0.1)',
                     borderWidth: 3,
                     tension: 0.3,
                     fill: true,
-                    pointRadius: 5,
-                    pointBackgroundColor: '#e8c93a'
+                    pointRadius: 5
                 }]
             },
             options: {
@@ -191,7 +187,7 @@
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: { 
-                    y: { beginAtZero: true, grid: { color: '#222' }, ticks: { color: '#666' } },
+                    y: { beginAtZero: true, grid: { color: '#222' } },
                     x: { display: false }
                 }
             }

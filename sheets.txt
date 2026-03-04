@@ -7,7 +7,6 @@ function doGet(e) {
   return ContentService.createTextOutput("Eroare: Lipsesc parametrii.").setMimeType(ContentService.MimeType.TEXT);
 }
 
-// --- FUNCȚIA 1: SALVARE CU APOSTROF (ANTI-DATA) ---
 function saveScoutingData(e) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var rawSheet = ss.getSheetByName("RawData");
@@ -28,22 +27,18 @@ function saveScoutingData(e) {
     }
   }
 
-  // Mapare coloane: B=2 (R ap), C=3 (R dep), D=4 (A ap), E=5 (A dep)
   var colMap = { "R ap": 2, "R dep": 3, "A ap": 4, "A dep": 5 };
   var targetCol = colMap[pos] || 2; 
 
   if (rowIndex !== -1) {
-    // Citim valorile existente
     var oldAuto = rawSheet.getRange(rowIndex, targetCol).getValue().toString();
     var oldTele = rawSheet.getRange(rowIndex, 6).getValue().toString(); 
     var oldRP = rawSheet.getRange(rowIndex, 7).getValue().toString(); 
     
-    // Concatenăm cu virgulă
     var newAuto = oldAuto ? oldAuto + ", " + e.parameter.autoData : e.parameter.autoData;
     var newTele = oldTele ? oldTele + ", " + e.parameter.scor : e.parameter.scor;
     var newRP = oldRP ? oldRP + ", " + e.parameter.rp : e.parameter.rp;
 
-    // Salvăm forțat ca TEXT folosind apostroful (')
     rawSheet.getRange(rowIndex, targetCol).setValue("'" + newAuto.replace(/'/g, ""));
     rawSheet.getRange(rowIndex, 6).setValue("'" + newTele.replace(/'/g, ""));
     rawSheet.getRange(rowIndex, 7).setValue("'" + newRP.replace(/'/g, ""));
@@ -51,7 +46,6 @@ function saveScoutingData(e) {
     
     return ContentService.createTextOutput("SUCCESS_UPDATED");
   } else {
-    // Echipa nouă: punem apostrof la începutul listelor
     var newRow = ["'" + teamId, "", "", "", "", "'" + e.parameter.scor, "'" + e.parameter.rp, new Date()];
     newRow[targetCol - 1] = "'" + e.parameter.autoData;
     rawSheet.appendRow(newRow);
@@ -59,19 +53,17 @@ function saveScoutingData(e) {
   }
 }
 
-// --- FUNCȚIA 2: SCANARE ȘI MEDII AUTO ---
 function scanTeamData(teamToFind) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var rawSheet = ss.getSheetByName("RawData");
+  var sheetAnalytics = ss.getSheetByName("Analytics");
   var rawVals = rawSheet.getDataRange().getValues();
   
   var match = rawVals.find(row => row[0].toString().replace(/'/g, "").trim() === teamToFind.toString().trim());
-  
   if (!match) return ContentService.createTextOutput(JSON.stringify({error: true})).setMimeType(ContentService.MimeType.JSON);
 
   const parseList = (val) => {
     if (!val) return [];
-    // Curățăm apostroful și extragem numerele (ignorăm textul gen "P")
     return val.toString().replace(/'/g, "").split(/[\s,]+/).map(n => {
       let num = parseFloat(n.split('(')[0]); 
       return isNaN(num) ? null : num;
@@ -79,19 +71,32 @@ function scanTeamData(teamToFind) {
   };
 
   const getAvg = (arr) => arr.length > 0 ? (arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(1) : "0.0";
+  const getMax = (arr) => arr.length > 0 ? Math.max(...arr) : 0;
 
-  // Medii pe Auto indiferent de alianță
-  var autoAp = parseList(match[1]).concat(parseList(match[3])); // Coloanele B + D
-  var autoDep = parseList(match[2]).concat(parseList(match[4])); // Coloanele C + E
+  var autoAp = parseList(match[1]).concat(parseList(match[3])); 
+  var autoDep = parseList(match[2]).concat(parseList(match[4])); 
   var scores = parseList(match[5]); 
   var rps = parseList(match[6]);
 
+  // Cerința 3: Strategie din Analytics coloana D
+  var strategy = "Fara Date";
+  if (sheetAnalytics) {
+    var aData = sheetAnalytics.getDataRange().getValues();
+    for (var i = 1; i < aData.length; i++) {
+      if (aData[i][0].toString().trim() === teamToFind.toString().trim()) {
+        strategy = aData[i][3] || "Nespecificat";
+        break;
+      }
+    }
+  }
+
   return ContentService.createTextOutput(JSON.stringify({
     avgGeneral: getAvg(scores),
-    avgLast3: getAvg(scores.slice(-3)),
+    avgLast3: getAvg(scores.slice(-3)), // Cerința 1
+    maxAutoAp: getMax(autoAp),         // Cerința 2
+    maxAutoDep: getMax(autoDep),       // Cerința 2
+    teleopStrategy: strategy,          // Cerința 3
     avgRP: getAvg(rps),
-    avgAutoAp: getAvg(autoAp),
-    avgAutoDep: getAvg(autoDep),
     chartData: scores.slice(-10)
   })).setMimeType(ContentService.MimeType.JSON);
 }

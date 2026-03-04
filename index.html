@@ -3,111 +3,59 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>DECODE HUB V4 - NATIONALS</title>
+<title>DECODE HUB V4</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root { --yellow: #e8c93a; --black: #0a0a0a; --white: #f5f5f0; --gray: #1a1a1a; --border: #333; --red: #ff4d4d; --green: #00e676; --glow: 0 0 15px rgba(232, 201, 58, 0.3); }
-  
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  
-  body { 
-    background: var(--black); 
-    color: var(--white); 
-    font-family: 'Space Mono', monospace; 
-    background-image: radial-gradient(circle at 50% 50%, #151515 0%, #0a0a0a 100%);
-  }
+  body { background: var(--black); color: var(--white); font-family: 'Space Mono', monospace; background-image: radial-gradient(circle at 50% 50%, #151515 0%, #0a0a0a 100%); }
 
-  /* Header Stilizat */
-  .nav-bar { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    padding: 20px; 
-    border-bottom: 2px solid var(--yellow); 
-    background: #000; 
-    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-    position: sticky; top: 0; z-index: 100;
-  }
-  
+  .nav-bar { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 2px solid var(--yellow); background: #000; position: sticky; top: 0; z-index: 100; }
   h1 { font-family: 'Bebas Neue'; font-size: 2.5rem; color: var(--yellow); letter-spacing: 2px; text-shadow: var(--glow); }
-
-  .btn-nav { 
-    background: transparent; border: 1px solid var(--yellow); color: var(--yellow); 
-    padding: 8px 15px; font-family: 'Bebas Neue'; font-size: 1.1rem; cursor: pointer; transition: 0.3s;
-  }
-  .btn-nav:hover { background: var(--yellow); color: #000; }
+  .btn-nav { background: transparent; border: 1px solid var(--yellow); color: var(--yellow); padding: 8px 15px; font-family: 'Bebas Neue'; font-size: 1.1rem; cursor: pointer; }
 
   .container { width: 100%; max-width: 450px; margin: auto; min-height: 100vh; }
   .screen { display: none; padding: 25px 20px; animation: scanIn 0.5s ease; }
   .screen.active { display: block; }
-  
-  @keyframes scanIn { 
-    from { opacity: 0; transform: translateY(20px); filter: brightness(2); } 
-    to { opacity: 1; transform: translateY(0); filter: brightness(1); } 
-  }
+  @keyframes scanIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-  /* Cards Design */
   .sub { font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 25px; display: block; text-align: center; }
+  .card { background: rgba(26, 26, 26, 0.8); border: 1px solid var(--border); padding: 20px; margin-bottom: 15px; position: relative; }
+  .card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--yellow); }
+  label { font-size: 0.7rem; color: var(--yellow); text-transform: uppercase; display: block; margin-bottom: 10px; font-weight: bold; }
   
-  .card { 
-    background: rgba(26, 26, 26, 0.8); border: 1px solid var(--border); 
-    padding: 20px; margin-bottom: 15px; position: relative; border-radius: 2px;
-  }
-  .card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--yellow); box-shadow: var(--glow); }
-  
-  label { font-size: 0.7rem; color: var(--yellow); text-transform: uppercase; display: block; margin-bottom: 10px; font-weight: bold; letter-spacing: 1px; }
-  
-  input, select { 
-    width: 100%; background: #000; border: 1px solid #444; padding: 15px; 
-    color: #fff; font-family: 'Space Mono'; outline: none; font-size: 1.1rem; border-radius: 0;
-  }
-  input:focus { border-color: var(--yellow); box-shadow: 0 0 10px rgba(232,201,58,0.2); }
+  input, select { width: 100%; background: #000; border: 1px solid #444; padding: 15px; color: #fff; font-family: 'Space Mono'; outline: none; font-size: 1.1rem; }
 
-  /* Counter Elements */
   .counter-row { display: flex; align-items: center; gap: 15px; }
-  .btn-act { 
-    flex: 2; background: var(--yellow); color: #000; border: none; padding: 18px; 
-    font-family: 'Bebas Neue'; font-size: 1.6rem; cursor: pointer; box-shadow: var(--glow); transition: 0.2s;
-  }
-  .btn-act:active { transform: scale(0.96); filter: brightness(1.2); }
-  
-  .btn-undo { 
-    flex: 1; background: #222; color: #666; border: 1px solid #333; 
-    padding: 18px; font-size: 0.8rem; cursor: pointer; font-family: 'Space Mono';
-  }
+  .btn-act { flex: 2; background: var(--yellow); color: #000; border: none; padding: 18px; font-family: 'Bebas Neue'; font-size: 1.6rem; cursor: pointer; box-shadow: var(--glow); }
+  .btn-undo { flex: 1; background: #222; color: #666; border: 1px solid #333; padding: 18px; font-size: 0.8rem; font-family: 'Space Mono'; cursor: pointer; }
+  .val { font-family: 'Bebas Neue'; font-size: 3rem; min-width: 60px; text-align: center; }
 
-  .val { font-family: 'Bebas Neue'; font-size: 3rem; min-width: 60px; text-align: center; color: var(--white); }
+  /* Stil specific pentru Parking compact */
+  .park-container { display: flex; align-items: center; gap: 10px; padding: 15px 20px; }
+  .park-container label { margin-bottom: 0; cursor: pointer; }
+  input[type="checkbox"] { width: 22px; height: 22px; cursor: pointer; accent-color: var(--yellow); width: auto; }
 
-  /* Report & Overlay */
-  .report-box { background: #000; border: 1px solid var(--yellow); padding: 25px; margin: 25px 0; box-shadow: inset 0 0 20px rgba(232,201,58,0.1); }
+  .report-box { background: #000; border: 1px solid var(--yellow); padding: 25px; margin: 25px 0; }
   .report-line { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #222; }
   .rep-key { font-size: 0.8rem; color: #888; text-transform: uppercase; }
   .rep-val { color: var(--yellow); font-family: 'Bebas Neue'; font-size: 1.8rem; }
 
-  #success-overlay { 
-    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-    background: #000; z-index: 1000; flex-direction: column; align-items: center; justify-content: center; 
-  }
-  .success-icon { font-size: 6rem; color: var(--green); text-shadow: 0 0 30px var(--green); margin-bottom: 20px; animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-  @keyframes pop { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-  /* Search Grid */
-  .intel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-  .i-box { background: #000; border: 1px solid var(--border); padding: 15px; text-align: center; }
-  .i-val { font-family: 'Bebas Neue'; font-size: 2rem; color: var(--yellow); }
-  .note-box { background: #111; padding: 15px; border-left: 3px solid var(--yellow); font-size: 0.85rem; color: #bbb; line-height: 1.4; margin-bottom: 15px; }
+  #success-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 1000; flex-direction: column; align-items: center; justify-content: center; }
+  .success-icon { font-size: 6rem; color: var(--green); text-shadow: 0 0 30px var(--green); margin-bottom: 20px; animation: pop 0.5s ease; }
+  @keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
 
   #loader { display: none; position: fixed; top: 85px; left: 50%; transform: translateX(-50%); background: var(--yellow); color: #000; padding: 8px 20px; font-weight: bold; z-index: 200; font-size: 0.75rem; border-radius: 20px; }
 </style>
 </head>
 <body>
 
-<div id="loader">ESTABLISHING UPLINK...</div>
+<div id="loader">UPLINKING...</div>
 
 <div id="success-overlay">
     <div class="success-icon">✓</div>
     <h1 style="color: var(--white); font-size: 2.5rem; letter-spacing: 4px;">MISSION SUCCESSFUL</h1>
-    <p style="color: var(--yellow); font-size: 0.8rem; margin-top: 15px; letter-spacing: 3px; opacity: 0.7;">RESETTING CORE TERMINAL...</p>
+    <p style="color: var(--yellow); font-size: 0.8rem; margin-top: 15px; letter-spacing: 3px; opacity: 0.7;">RESETTING TERMINAL...</p>
 </div>
 
 <div class="container">
@@ -117,11 +65,11 @@
     </div>
 
     <div id="screen-scout" class="screen active">
-        <span class="sub">// DATA ACQUISITION MODE //</span>
+        <span class="sub">// DATA ACQUISITION //</span>
         
         <div style="display:grid; grid-template-columns: 1.3fr 0.7fr; gap:12px; margin-bottom:20px;">
             <div>
-              <label>Team ID (5-DIGIT)</label>
+              <label>Team ID</label>
               <input type="number" id="t-id" placeholder="00000" oninput="if(this.value.length > 5) this.value = this.value.slice(0, 5);">
             </div>
             <div>
@@ -134,7 +82,7 @@
         </div>
 
         <div class="card">
-            <label>Auto Cycles Scored</label>
+            <label>Auto Scored</label>
             <div class="counter-row">
                 <button class="btn-act" onclick="upd('a_in', 1)">+ PIECE</button>
                 <div class="val" id="v-a_in">0</div>
@@ -143,26 +91,26 @@
         </div>
 
         <div class="card" style="border-left-color: var(--red)">
-            <label style="color:var(--red)">Auto Cycles Missed</label>
+            <label style="color:var(--red)">Auto Missed</label>
             <div class="counter-row">
-                <button class="btn-act" style="background:var(--red); color:#fff; box-shadow: 0 0 15px rgba(255,77,77,0.2);" onclick="upd('a_ms', 1)">+ MISS</button>
+                <button class="btn-act" style="background:var(--red); color:#fff;" onclick="upd('a_ms', 1)">+ MISS</button>
                 <div class="val" id="v-a_ms">0</div>
                 <button class="btn-undo" onclick="upd('a_ms', -1)">Undo</button>
             </div>
         </div>
 
         <div class="card" style="border-left-color: var(--green)">
-            <label style="color:var(--green)">TeleOp Total Pieces</label>
+            <label style="color:var(--green)">TeleOp Pieces</label>
             <div class="counter-row">
-                <button class="btn-act" style="background:var(--green); color:#fff; box-shadow: 0 0 15px rgba(0,230,118,0.2);" onclick="upd('tele', 1)">+ PIECE</button>
+                <button class="btn-act" style="background:var(--green); color:#fff;" onclick="upd('tele', 1)">+ PIECE</button>
                 <div class="val" id="v-tele">0</div>
                 <button class="btn-undo" onclick="upd('tele', -1)">Undo</button>
             </div>
         </div>
 
-        <div class="card" style="display:flex; justify-content:space-between; align-items:center; padding: 25px 20px;">
-            <label style="margin:0">Parking Protocol</label>
-            <input type="checkbox" id="park" style="width:30px; height:30px; accent-color: var(--yellow);">
+        <div class="card park-container">
+            <input type="checkbox" id="park">
+            <label for="park">Parking</label>
         </div>
 
         <div class="card">
@@ -174,99 +122,64 @@
     </div>
 
     <div id="screen-report" class="screen">
-        <span class="sub">// VERIFYING TRANSMISSION //</span>
-        
+        <span class="sub">// VERIFICATION //</span>
         <div class="report-box">
             <div class="report-line"><span class="rep-key">TEAM ID</span><span class="rep-val" id="rep-team">--</span></div>
             <div class="report-line"><span class="rep-key">AUTO FORMAT</span><span class="rep-val" id="rep-auto-raw">--</span></div>
-            <div class="report-line"><span class="rep-key">TELEOP PIECES</span><span class="rep-val" id="rep-tele">--</span></div>
-            <div class="report-line"><span class="rep-key">ALLIANCE POS</span><span class="rep-val" id="rep-pos">--</span></div>
+            <div class="report-line"><span class="rep-key">TELEOP TOTAL</span><span class="rep-val" id="rep-tele">--</span></div>
+            <div class="report-line"><span class="rep-key">POS</span><span class="rep-val" id="rep-pos">--</span></div>
         </div>
-
         <button class="btn-act" style="width:100%; height: 70px; font-size: 1.8rem;" onclick="confirmAndSend()">INITIATE UPLINK</button>
-        <button class="btn-undo" style="width:100%; margin-top:15px; height: 50px; font-size: 1rem;" onclick="backToScout()">RE-CALIBRATE DATA</button>
+        <button class="btn-undo" style="width:100%; margin-top:15px; height: 50px;" onclick="backToScout()">EDIT</button>
     </div>
 
     <div id="screen-search" class="screen">
-        <span class="sub">// DATABASE INTERROGATION //</span>
+        <span class="sub">// DATABASE //</span>
         <div style="display:flex; gap:12px; margin-bottom:25px;">
-            <input type="number" id="q-team" placeholder="Search ID...">
+            <input type="number" id="q-team" placeholder="ID...">
             <button class="btn-act" style="padding:0 30px; flex:none; width: auto;" onclick="searchTeam()">GO</button>
         </div>
-        
         <div id="results" style="display:none;">
-            <div class="intel-grid">
-                <div class="i-box"><label>OPR</label><div class="i-val" id="r-opr">--</div></div>
-                <div class="i-box"><label>AVG TOTAL</label><div class="i-val" id="r-at">--</div></div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                <div style="background:#000; border:1px solid #333; padding:15px; text-align:center;"><label>OPR</label><div id="r-opr" style="font-family:'Bebas Neue'; font-size:2rem; color:var(--yellow);">--</div></div>
+                <div style="background:#000; border:1px solid #333; padding:15px; text-align:center;"><label>AVG</label><div id="r-at" style="font-family:'Bebas Neue'; font-size:2rem; color:var(--yellow);">--</div></div>
             </div>
-            <label>LAST 3 MATCH HISTORY</label><div class="i-val" id="r-s3" style="font-size:1.3rem; margin-bottom:15px; background: #111; padding: 10px;">--</div>
-            <label>STRATEGIC BEHAVIOR</label><div class="note-box" id="r-strat">--</div>
-            <label>MECHANICAL INTEL</label><div class="note-box" id="r-sort">--</div>
+            <label>LAST 3 MATCHES</label><div id="r-s3" style="font-family:'Bebas Neue'; font-size:1.3rem; margin-bottom:15px; background:#111; padding:10px; color:var(--yellow);">--</div>
         </div>
     </div>
 </div>
 
 <script>
-    // URL-ul tau nou actualizat
     const SCRIPT = "https://script.google.com/macros/s/AKfycbyoReeVkb-J-Br5iO0-bZm8zbrMgoRrCUTzZKWEpSUnY0dNt6R9JTVAKO6bM90GZCoi/exec";
     let state = { a_in: 0, a_ms: 0, tele: 0 };
 
-    function upd(k, v) { 
-        state[k] = Math.max(0, state[k] + v); 
-        document.getElementById('v-'+k).textContent = state[k]; 
-    }
+    function upd(k, v) { state[k] = Math.max(0, state[k] + v); document.getElementById('v-'+k).textContent = state[k]; }
 
     function showReport() {
         const team = document.getElementById('t-id').value;
-        if(!team) { alert("ERROR: TEAM ID REQUIRED"); return; }
-        
+        if(!team) return alert("TEAM ID REQUIRED");
         const totalAuto = state.a_in + state.a_ms;
         const parkStr = document.getElementById('park').checked ? 'P' : '';
-        const rawAuto = `${state.a_in}(${totalAuto})${parkStr}`;
-
         document.getElementById('rep-team').textContent = team;
-        document.getElementById('rep-auto-raw').textContent = rawAuto;
+        document.getElementById('rep-auto-raw').textContent = `${state.a_in}(${totalAuto})${parkStr}`;
         document.getElementById('rep-tele').textContent = state.tele;
         document.getElementById('rep-pos').textContent = document.getElementById('p-id').value;
-
         document.getElementById('screen-scout').classList.remove('active');
         document.getElementById('screen-report').classList.add('active');
     }
 
-    function backToScout() {
-        document.getElementById('screen-report').classList.remove('active');
-        document.getElementById('screen-scout').classList.add('active');
-    }
+    function backToScout() { document.getElementById('screen-report').classList.remove('active'); document.getElementById('screen-scout').classList.add('active'); }
 
     async function confirmAndSend() {
         document.getElementById('loader').style.display = 'block';
         const totalAuto = state.a_in + state.a_ms;
         const autoData = `${state.a_in}(${totalAuto})${document.getElementById('park').checked ? 'P' : ''}`;
-        
-        // Asigură-te că aceste nume (team, position, etc.) sunt aceleași cu cele din doPost-ul scriptului
-        const payload = { 
-            team: document.getElementById('t-id').value, 
-            position: document.getElementById('p-id').value, 
-            autoData: autoData, 
-            scor: state.tele, 
-            rp: document.getElementById('rp-val').value 
-        };
-
+        const payload = { team: document.getElementById('t-id').value, position: document.getElementById('p-id').value, autoData: autoData, scor: state.tele, rp: document.getElementById('rp-val').value };
         try {
-            await fetch(SCRIPT, { 
-                method: 'POST', 
-                mode: 'no-cors', 
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload) 
-            });
-            
+            await fetch(SCRIPT, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
             document.getElementById('success-overlay').style.display = 'flex';
             setTimeout(() => { location.reload(); }, 1500);
-
-        } catch(e) { 
-            alert("CONNECTION ERROR. DATA NOT SENT."); 
-            document.getElementById('loader').style.display = 'none';
-        }
+        } catch(e) { alert("ERROR"); document.getElementById('loader').style.display = 'none'; }
     }
 
     function toggleSearch() {
@@ -274,8 +187,6 @@
         document.getElementById('screen-scout').classList.toggle('active', !isSearch);
         document.getElementById('screen-report').classList.remove('active');
         document.getElementById('mode-btn').textContent = isSearch ? "BACK" : "INTEL SEARCH";
-        document.getElementById('mode-btn').style.background = isSearch ? "#fff" : "transparent";
-        document.getElementById('mode-btn').style.color = isSearch ? "#000" : "var(--yellow)";
     }
 
     async function searchTeam() {
@@ -289,9 +200,7 @@
             document.getElementById('r-opr').textContent = d.opr || "N/A";
             document.getElementById('r-at').textContent = d.avgTotal || "0";
             document.getElementById('r-s3').textContent = d.last3Scores || "--";
-            document.getElementById('r-strat').textContent = d.strategy || "No strategy found.";
-            document.getElementById('r-sort').textContent = d.sorting || "No data.";
-        } catch(e) { alert("DATABASE ACCESS DENIED"); }
+        } catch(e) { alert("ERROR"); }
         document.getElementById('loader').style.display = 'none';
     }
 </script>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DECODE HUB V26.7</title>
+    <title>DECODE HUB V27.0</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -11,12 +11,7 @@
         :root { --yellow: #e8c93a; --black: #0a0a0a; --white: #f5f5f0; --red: #ff4d4d; --green: #00e676; --blue: #3498db; --purple: #9b59b6; --orange: #ff9800; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Space Mono', monospace; }
         body { background: var(--black); color: var(--white); overflow-x: hidden; }
-        
-        /* Custom SweetAlert Style */
         .swal2-popup { background: #1a1a1a !important; color: #fff !important; border: 2px solid var(--yellow) !important; }
-        .swal2-title { color: var(--yellow) !important; font-family: 'Bebas Neue' !important; }
-        .swal2-confirm { background-color: var(--yellow) !important; color: #000 !important; font-family: 'Bebas Neue' !important; }
-
         .nav-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 2px solid var(--yellow); background: #000; position: sticky; top: 0; z-index: 100; }
         h1 { font-family: 'Bebas Neue'; font-size: 2.2rem; color: var(--yellow); letter-spacing: 1px; }
         .btn-nav { background: transparent; border: 1px solid var(--yellow); color: var(--yellow); padding: 5px 12px; font-family: 'Bebas Neue'; cursor: pointer; }
@@ -28,7 +23,6 @@
         label { font-size: 0.7rem; color: var(--yellow); text-transform: uppercase; font-weight: bold; margin-bottom: 8px; display: block; }
         input, select { width: 100%; background: #000; border: 1px solid #444; padding: 12px; color: #fff; margin-bottom: 5px; font-size: 1rem; }
         .btn-act { width: 100%; background: var(--yellow); color: #000; border: none; padding: 15px; font-family: 'Bebas Neue'; font-size: 1.5rem; cursor: pointer; transition: 0.2s; }
-        .btn-act:active { transform: scale(0.95); background: #c5aa30; }
         .counter-row { display: flex; align-items: center; gap: 10px; }
         .val { font-family: 'Bebas Neue'; font-size: 2.8rem; min-width: 50px; text-align: center; color: var(--white); }
         .btn-undo { flex: 1; background: #262626; color: #888; border: 1px solid #333; padding: 12px; font-size: 0.8rem; cursor: pointer; }
@@ -56,24 +50,10 @@
                 </select>
             </div>
         </div>
-        
-        <div class="card"><label>Auto Scored</label>
-            <div class="counter-row"><button class="btn-act" onclick="upd('a_in', 1)">+ PIECE</button><div class="val" id="v-a_in">0</div><button class="btn-undo" onclick="upd('a_in', -1)">Undo</button></div>
-        </div>
-
-        <div class="card" style="border-left-color: var(--red)"><label style="color:var(--red)">Auto Missed</label>
-            <div class="counter-row"><button class="btn-act" style="background:var(--red); color:white" onclick="upd('a_ms', 1)">+ MISS</button><div class="val" id="v-a_ms">0</div><button class="btn-undo" onclick="upd('a_ms', -1)">Undo</button></div>
-        </div>
-
-        <div class="card" style="border-left-color: var(--green)"><label style="color:var(--green)">TeleOp Pieces</label>
-            <div class="counter-row"><button class="btn-act" style="background:var(--green); color:white" onclick="upd('tele', 1)">+ PIECE</button><div class="val" id="v-tele">0</div><button class="btn-undo" onclick="upd('tele', -1)">Undo</button></div>
-        </div>
-
-        <div class="card" style="display:flex; align-items:center; gap:12px;">
-            <input type="checkbox" id="park" style="width:25px; height:25px; accent-color: var(--yellow);">
-            <label for="park" style="margin:0">Parking Achieved</label>
-        </div>
-
+        <div class="card"><label>Auto Scored</label><div class="counter-row"><button class="btn-act" onclick="upd('a_in', 1)">+ PIECE</button><div class="val" id="v-a_in">0</div><button class="btn-undo" onclick="upd('a_in', -1)">Undo</button></div></div>
+        <div class="card" style="border-left-color: var(--red)"><label style="color:var(--red)">Auto Missed</label><div class="counter-row"><button class="btn-act" style="background:var(--red); color:white" onclick="upd('a_ms', 1)">+ MISS</button><div class="val" id="v-a_ms">0</div><button class="btn-undo" onclick="upd('a_ms', -1)">Undo</button></div></div>
+        <div class="card" style="border-left-color: var(--green)"><label style="color:var(--green)">TeleOp Pieces</label><div class="counter-row"><button class="btn-act" style="background:var(--green); color:white" onclick="upd('tele', 1)">+ PIECE</button><div class="val" id="v-tele">0</div><button class="btn-undo" onclick="upd('tele', -1)">Undo</button></div></div>
+        <div class="card" style="display:flex; align-items:center; gap:12px;"><input type="checkbox" id="park" style="width:25px; height:25px;"><label for="park" style="margin:0">Parking Achieved</label></div>
         <div class="card"><label>Ranking Points (RP)</label><input type="number" id="rp-val" value="0"></div>
         <button class="btn-act" style="height:70px; font-size:1.8rem;" onclick="showReport()">GENERATE REPORT</button>
     </div>
@@ -81,56 +61,47 @@
     <div id="screen-report" class="screen">
         <div class="card" style="background:#000; border: 2px solid var(--yellow); padding: 30px 15px;">
             <label style="text-align:center; font-size: 1rem; margin-bottom: 20px; color: var(--yellow)">MISSION REPORT</label>
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom: 1px solid #333; padding-bottom: 5px;"><span>TEAM ID</span><span id="rep-team" class="val-intel"></span></div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom: 1px solid #333; padding-bottom: 5px;"><span>AUTO (S/M)</span><span id="rep-auto" class="val-intel"></span></div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:20px; border-bottom: 1px solid #333; padding-bottom: 5px;"><span>TELEOP</span><span id="rep-tele" class="val-intel"></span></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom: 1px solid #333;"><span>TEAM ID</span><span id="rep-team" class="val-intel"></span></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom: 1px solid #333;"><span>AUTO</span><span id="rep-auto" class="val-intel"></span></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:20px; border-bottom: 1px solid #333;"><span>TELEOP</span><span id="rep-tele" class="val-intel"></span></div>
         </div>
         <button class="btn-act" style="background: var(--green); color: black;" onclick="confirmAndSend()">CONFIRM & UPLINK</button>
-        <button class="btn-undo" style="width:100%; margin-top:15px; height:50px; font-family: 'Bebas Neue'; font-size: 1.2rem;" onclick="cancelReport()">ABORT / BACK</button>
+        <button class="btn-undo" style="width:100%; margin-top:15px; height:50px; font-family:'Bebas Neue'; font-size:1.2rem" onclick="cancelReport()">BACK</button>
     </div>
 
     <div id="screen-search" class="screen">
-        <div style="display:flex; gap:10px; margin-bottom:15px">
-            <input type="number" id="q-team" placeholder="Team ID...">
-            <button class="btn-act" style="width:80px" onclick="searchTeam()">SCAN</button>
-        </div>
+        <div style="display:flex; gap:10px; margin-bottom:15px"><input type="number" id="q-team" placeholder="Team ID..."><button class="btn-act" style="width:80px" onclick="searchTeam()">SCAN</button></div>
         <div id="results" style="display:none">
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom: 10px">
-                <div class="card"><label>AVG TELE (SCOUT)</label><div id="r-avg-gen" class="val-intel">--</div></div>
-                <div class="card"><label>AVG RP (SCOUT)</label><div id="r-avg-rp" class="val-intel" style="color:var(--blue)">--</div></div>
+                <div class="card"><label>AVG TELE (ALL)</label><div id="r-avg-gen" class="val-intel">--</div></div>
+                <div class="card" style="border-left-color: var(--blue)"><label style="color:var(--blue)">AVG SCOR (L3)</label><div id="r-avg-3" class="val-intel" style="color:var(--blue)">--</div></div>
             </div>
             
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom: 10px">
-                <div class="card" style="border-left-color: var(--orange)"><label style="color:var(--orange)">FTC OPR</label><div id="r-opr" class="val-intel" style="color:var(--orange)">...</div></div>
+                <div class="card" style="border-left-color: var(--green)"><label style="color:var(--green)">MAX AUTO AP.</label><div id="r-max-ap" class="val-intel" style="color:var(--green)">--</div></div>
+                <div class="card" style="border-left-color: var(--purple)"><label style="color:var(--purple)">MAX AUTO DEP.</label><div id="r-max-dep" class="val-intel" style="color:var(--purple)">--</div></div>
+            </div>
+
+            <div class="card" style="border-left-color: var(--orange)"><label style="color:var(--orange)">TELEOP STRATEGIE (ANALYTICS)</label><div id="r-strategy" style="font-weight:bold; color:var(--white); font-size:0.9rem; margin-top:5px">--</div></div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom: 10px">
+                <div class="card" style="border-left-color: var(--white)"><label>FTC OPR</label><div id="r-opr" class="val-intel">...</div></div>
                 <div class="card" style="border-left-color: var(--white)"><label>FTC RANK</label><div id="r-rank" class="val-intel">...</div></div>
             </div>
-
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom: 10px">
-                <div class="card"><label>AVG AUTO AP.</label><div id="r-avg-auto-ap" class="val-intel" style="color:var(--green)">--</div></div>
-                <div class="card"><label>AVG AUTO DEP.</label><div id="r-avg-auto-dep" class="val-intel" style="color:var(--purple)">--</div></div>
-            </div>
-
             <div class="card"><label>EVOLUTIE TELEOP</label><div style="height:150px"><canvas id="scoreChart"></canvas></div></div>
         </div>
     </div>
 </div>
 
 <script>
-    /* --- CONFIGURATIE FINALA --- */
-    const SCRIPT = "https://script.google.com/macros/s/AKfycbyemqF1Pbw0ZxuLcZN2fx0Z62CtGUvmfzPONMaWDkN-l95T2jYuFHY-3bn9bEheSPE/exec";
-    const API_USER = "contandrei";
-    const API_TOKEN = "80A3A5D9-9D80-44D7-8324-25B519CBFC84";
-    const EVENT_CODE = "ROCMP";
-    const SEASON = "2025";
+    const SCRIPT = "https://script.google.com/macros/s/AKfycbxD0UPicrTagV9fcoSPl43Xc9udENrERTc9fx6ijq_lI15u_rPH4JD2JzUQC9ZT-zKj/exec";
+    const API_USER = "contandrei"; const API_TOKEN = "80A3A5D9-9D80-44D7-8324-25B519CBFC84";
+    const EVENT_CODE = "ROCMP"; const SEASON = "2025";
 
     let state = { a_in: 0, a_ms: 0, tele: 0 };
     let myChart = null;
 
-    function upd(key, val) { 
-        state[key] = Math.max(0, state[key] + val); 
-        document.getElementById('v-' + key).textContent = state[key]; 
-    }
-
+    function upd(k, v) { state[k] = Math.max(0, state[k] + v); document.getElementById('v-' + k).textContent = state[k]; }
     function toggleSearch() {
         const isS = document.getElementById('screen-search').classList.toggle('active');
         document.getElementById('screen-scout').classList.toggle('active', !isS);
@@ -138,104 +109,62 @@
     }
 
     function showReport() {
-        const team = document.getElementById('t-id').value;
-        if(!team) return Swal.fire({ icon: 'error', title: 'EROARE', text: 'INTRODU ID ECHIPA!' });
-        
-        document.getElementById('rep-team').textContent = team;
-        const parkSuffix = document.getElementById('park').checked ? "P" : "";
-        document.getElementById('rep-auto').textContent = `${state.a_in}(${state.a_in + state.a_ms})${parkSuffix}`;
+        const t = document.getElementById('t-id').value; if(!t) return Swal.fire({icon:'error', title:'TEAM ID!'});
+        document.getElementById('rep-team').textContent = t;
+        const p = document.getElementById('park').checked ? "P" : "";
+        document.getElementById('rep-auto').textContent = `${state.a_in}(${state.a_in+state.a_ms})${p}`;
         document.getElementById('rep-tele').textContent = state.tele;
-        
         document.getElementById('screen-scout').classList.remove('active');
         document.getElementById('screen-report').classList.add('active');
     }
-
-    function cancelReport() {
-        document.getElementById('screen-report').classList.remove('active');
-        document.getElementById('screen-scout').classList.add('active');
-    }
-
-    async function fetchFTCStats(teamId) {
-        document.getElementById('r-opr').textContent = "...";
-        document.getElementById('r-rank').textContent = "...";
-        
-        const auth = btoa(`${API_USER}:${API_TOKEN}`);
-        const apiUrl = `https://ftc-api.firstinspires.org/v2.0/${SEASON}/rankings/${EVENT_CODE}`;
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(apiUrl)}&disableCache=true`;
-
-        try {
-            const response = await fetch(proxyUrl);
-            const result = await response.json();
-            const data = JSON.parse(result.contents);
-
-            if (data && data.Rankings) {
-                const stats = data.Rankings.find(r => r.teamNumber == teamId);
-                if (stats) {
-                    document.getElementById('r-opr').textContent = stats.sortOrder1.toFixed(2);
-                    document.getElementById('r-rank').textContent = "#" + stats.rank;
-                } else {
-                    document.getElementById('r-opr').textContent = "N/A";
-                    document.getElementById('r-rank').textContent = "N/A";
-                }
-            }
-        } catch (e) {
-            document.getElementById('r-opr').textContent = "ERR";
-            document.getElementById('r-rank').textContent = "ERR";
-        }
-    }
+    function cancelReport() { document.getElementById('screen-report').classList.remove('active'); document.getElementById('screen-scout').classList.add('active'); }
 
     async function confirmAndSend() {
         document.getElementById('loader').style.display = 'block';
         const team = document.getElementById('t-id').value;
         const pos = document.getElementById('p-id').value;
-        const parkSuffix = document.getElementById('park').checked ? "P" : "";
-        const autoStr = `${state.a_in}(${state.a_in + state.a_ms})${parkSuffix}`;
+        const park = document.getElementById('park').checked ? "P" : "";
+        const auto = `${state.a_in}(${state.a_in + state.a_ms})${park}`;
         const rp = document.getElementById('rp-val').value;
-
-        const finalUrl = `${SCRIPT}?team=${team}&position=${encodeURIComponent(pos)}&autoData=${encodeURIComponent(autoStr)}&scor=${state.tele}&rp=${rp}`;
-
+        const url = `${SCRIPT}?team=${team}&position=${encodeURIComponent(pos)}&autoData=${encodeURIComponent(auto)}&scor=${state.tele}&rp=${rp}`;
         try {
-            await fetch(finalUrl, { method: 'GET', mode: 'no-cors' });
+            await fetch(url, { method: 'GET', mode: 'no-cors' });
             document.getElementById('loader').style.display = 'none';
-            
-            Swal.fire({
-                title: 'MISSION SUCCESS',
-                text: 'Datele au fost salvate!',
-                icon: 'success',
-                timer: 2000,
-                showConfirmButton: false
-            }).then(() => {
-                location.reload();
-            });
-
-        } catch(e) { 
-            document.getElementById('loader').style.display = 'none';
-            Swal.fire({ icon: 'error', title: 'FAILED', text: 'Eroare de conexiune!' });
-        }
+            Swal.fire({ title: 'SUCCESS', icon: 'success', timer: 1500, showConfirmButton: false }).then(() => location.reload());
+        } catch(e) { document.getElementById('loader').style.display = 'none'; Swal.fire({ icon: 'error', title: 'FAILED' }); }
     }
 
     async function searchTeam() {
-        const t = document.getElementById('q-team').value;
-        if(!t) return;
+        const t = document.getElementById('q-team').value; if(!t) return;
         document.getElementById('loader').style.display = 'block';
         try {
             const res = await fetch(`${SCRIPT}?team=${t}`);
             const d = await res.json();
-            if(d.error) {
-                Swal.fire({ icon: 'info', title: 'OBSERVAȚIE', text: 'Echipa nu a fost găsită în Sheets.' });
-            } else {
+            if(d.error) { Swal.fire({ icon: 'info', title: 'NOT FOUND' }); } 
+            else {
                 document.getElementById('results').style.display = 'block';
                 document.getElementById('r-avg-gen').textContent = d.avgGeneral;
-                document.getElementById('r-avg-rp').textContent = d.avgRP;
-                document.getElementById('r-avg-auto-ap').textContent = d.avgAutoAp;
-                document.getElementById('r-avg-auto-dep').textContent = d.avgAutoDep;
+                document.getElementById('r-avg-3').textContent = d.avgLast3;
+                document.getElementById('r-max-ap').textContent = d.maxAutoAp;
+                document.getElementById('r-max-dep').textContent = d.maxAutoDep;
+                document.getElementById('r-strategy').textContent = d.teleopStrategy;
                 if(d.chartData) updateChart(d.chartData);
                 fetchFTCStats(t);
             }
-        } catch(e) { 
-            Swal.fire({ icon: 'error', title: 'ERROR', text: 'Eroare la scanare Sheets.' }); 
-        }
+        } catch(e) { Swal.fire({ icon: 'error', title: 'ERROR' }); }
         document.getElementById('loader').style.display = 'none';
+    }
+
+    async function fetchFTCStats(id) {
+        const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://ftc-api.firstinspires.org/v2.0/${SEASON}/rankings/${EVENT_CODE}`)}&disableCache=true`;
+        try {
+            const res = await fetch(proxy); const result = await res.json(); const data = JSON.parse(result.contents);
+            const stats = data.Rankings.find(r => r.teamNumber == id);
+            if (stats) {
+                document.getElementById('r-opr').textContent = stats.sortOrder1.toFixed(2);
+                document.getElementById('r-rank').textContent = "#" + stats.rank;
+            } else { document.getElementById('r-opr').textContent = "N/A"; document.getElementById('r-rank').textContent = "N/A"; }
+        } catch (e) { document.getElementById('r-opr').textContent = "ERR"; }
     }
 
     function updateChart(pts) {
@@ -243,10 +172,7 @@
         if(myChart) myChart.destroy();
         myChart = new Chart(ctx, {
             type: 'line',
-            data: { 
-                labels: pts.map((_,i)=>i+1), 
-                datasets: [{ data: pts, borderColor: '#e8c93a', tension: 0.3, fill: true, backgroundColor: 'rgba(232,201,58,0.1)' }] 
-            },
+            data: { labels: pts.map((_,i)=>i+1), datasets: [{ data: pts, borderColor: '#e8c93a', tension: 0.3, fill: true, backgroundColor: 'rgba(232,201,58,0.1)' }] },
             options: { plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { beginAtZero: true, grid: { color: '#333' } } }, maintainAspectRatio: false }
         });
     }

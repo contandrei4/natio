@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DECODE HUB V23.0 - NATIONAL</title>
+    <title>DECODE HUB V25.0 - NATIONAL</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -25,20 +25,13 @@
         .counter-row { display: flex; align-items: center; gap: 10px; }
         .val { font-family: 'Bebas Neue'; font-size: 2.8rem; min-width: 50px; text-align: center; color: var(--white); }
         .btn-undo { flex: 1; background: #262626; color: #888; border: 1px solid #333; padding: 12px; font-size: 0.8rem; cursor: pointer; }
-        #loader { display: none; position: fixed; top: 75px; left: 50%; transform: translateX(-50%); background: var(--yellow); color: #000; padding: 5px 15px; z-index: 200; font-weight: bold; border-radius: 10px; box-shadow: 0 0 15px rgba(232, 201, 58, 0.4); }
+        #loader { display: none; position: fixed; top: 75px; left: 50%; transform: translateX(-50%); background: var(--yellow); color: #000; padding: 5px 15px; z-index: 200; font-weight: bold; border-radius: 10px; }
         .val-intel { font-family: 'Bebas Neue'; font-size: 2rem; color: var(--yellow); }
-        #success-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
     </style>
 </head>
 <body>
 
-<div id="loader">UPLOADING...</div>
-
-<div id="success-screen">
-    <div style="font-size: 5rem; color: var(--green);">✓</div>
-    <h2 style="font-family:'Bebas Neue'; font-size: 2.5rem; color: var(--yellow);">UPLINK SUCCESS</h2>
-    <p style="color: #888;">DATELE AU FOST SALVATE ÎN CLOUD</p>
-</div>
+<div id="loader">SINCRONIZARE...</div>
 
 <div class="container">
     <div class="nav-bar">
@@ -80,8 +73,8 @@
 
     <div id="screen-report" class="screen">
         <div class="card" style="background:#000; border: 2px solid var(--yellow);">
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:5px;"><span>TEAM</span><span id="rep-team" class="val-intel"></span></div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:5px;"><span>AUTO (S/M)</span><span id="rep-auto" class="val-intel"></span></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px;"><span>TEAM</span><span id="rep-team" class="val-intel"></span></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px;"><span>AUTO (S/M)</span><span id="rep-auto" class="val-intel"></span></div>
             <div style="display:flex; justify-content:space-between;"><span>TELEOP</span><span id="rep-tele" class="val-intel"></span></div>
         </div>
         <button class="btn-act" onclick="confirmAndSend()">CONFIRM UPLINK</button>
@@ -94,20 +87,23 @@
             <button class="btn-act" style="width:80px" onclick="searchTeam()">SCAN</button>
         </div>
         <div id="results" style="display:none">
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom: 10px">
                 <div class="card"><label>AVG TELE</label><div id="r-avg-gen" class="val-intel">--</div></div>
-                <div class="card"><label>AVG L3</label><div id="r-avg-l3" class="val-intel" style="color:var(--green)">--</div></div>
+                <div class="card"><label>AVG RP</label><div id="r-avg-rp" class="val-intel" style="color:var(--blue)">--</div></div>
             </div>
+            
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom: 10px">
+                <div class="card"><label>AVG AUTO AP.</label><div id="r-avg-auto-ap" class="val-intel" style="color:var(--green)">--</div></div>
+                <div class="card"><label>AVG AUTO DEP.</label><div id="r-avg-auto-dep" class="val-intel" style="color:var(--purple)">--</div></div>
+            </div>
+
             <div class="card"><label>EVOLUTIE TELEOP</label><div style="height:150px"><canvas id="scoreChart"></canvas></div></div>
-            <div class="card"><label>STRATEGIE</label><div id="r-strat" style="font-size:0.85rem">--</div></div>
         </div>
     </div>
 </div>
 
 <script>
-    /* --- CONFIGURARE --- */
-    // ASIGURĂ-TE CĂ ACEST LINK ESTE CEL DIN "NEW DEPLOYMENT"
-    const SCRIPT = "https://script.google.com/macros/s/AKfycbxrdAgGNU8n9xDxVaNMXkwDn3_P4ifjBCGTnID9dhvHU1J4QSzuo2efVc8UH9NerlQ/exec";
+    const SCRIPT = "https://script.google.com/macros/s/AKfycbyemqF1Pbw0ZxuLcZN2fx0Z62CtGUvmfzPONMaWDkN-l95T2jYuFHY-3bn9bEheSPE/exec"; 
     
     let state = { a_in: 0, a_ms: 0, tele: 0 };
     let myChart = null;
@@ -117,49 +113,42 @@
         document.getElementById('v-' + key).textContent = state[key]; 
     }
 
+    function toggleSearch() {
+        const isS = document.getElementById('screen-search').classList.toggle('active');
+        document.getElementById('screen-scout').classList.toggle('active', !isS);
+        document.getElementById('mode-btn').textContent = isS ? "BACK" : "INTEL SEARCH";
+    }
+
     function showReport() {
         const team = document.getElementById('t-id').value;
         if(!team) return alert("INTRODU ID ECHIPĂ!");
         document.getElementById('rep-team').textContent = team;
-        document.getElementById('rep-auto').textContent = `${state.a_in}/${state.a_in + state.a_ms}${document.getElementById('park').checked ? "P" : ""}`;
+        // Format raport: Scored(Missed) + P dacă e park
+        const parkSuffix = document.getElementById('park').checked ? "P" : "";
+        document.getElementById('rep-auto').textContent = `${state.a_in}(${state.a_in + state.a_ms})${parkSuffix}`;
         document.getElementById('rep-tele').textContent = state.tele;
         document.getElementById('screen-scout').classList.remove('active');
         document.getElementById('screen-report').classList.add('active');
     }
 
-    /* FUNCTIA CRITICĂ DE TRIMITERE */
     async function confirmAndSend() {
         document.getElementById('loader').style.display = 'block';
-        
         const team = document.getElementById('t-id').value;
         const pos = document.getElementById('p-id').value;
-        const autoStr = `${state.a_in}(${state.a_in + state.a_ms})${document.getElementById('park').checked ? "P" : ""}`;
-        const tele = state.tele;
+        const parkSuffix = document.getElementById('park').checked ? "P" : "";
+        const autoStr = `${state.a_in}(${state.a_in + state.a_ms})${parkSuffix}`;
         const rp = document.getElementById('rp-val').value;
 
-        // Metoda GET - atașăm datele direct în URL pentru a evita blocajele CORS
-        const finalUrl = `${SCRIPT}?team=${encodeURIComponent(team)}&position=${encodeURIComponent(pos)}&autoData=${encodeURIComponent(autoStr)}&scor=${encodeURIComponent(tele)}&rp=${encodeURIComponent(rp)}`;
+        const finalUrl = `${SCRIPT}?team=${team}&position=${encodeURIComponent(pos)}&autoData=${encodeURIComponent(autoStr)}&scor=${state.tele}&rp=${rp}`;
 
         try {
-            // Trimitem cererea. Folosim no-cors pentru că Apps Script redirecționează și browserele se sperie.
             await fetch(finalUrl, { method: 'GET', mode: 'no-cors' });
-            
-            // Dacă am ajuns aici, fetch-ul a plecat spre Google
-            document.getElementById('loader').style.display = 'none';
-            document.getElementById('success-screen').style.display = 'flex';
-            setTimeout(() => { location.reload(); }, 2000);
-            
+            alert("UPLINK SUCCESS!");
+            location.reload();
         } catch(e) {
+            alert("EROARE!");
             document.getElementById('loader').style.display = 'none';
-            alert("EROARE: Datele nu au putut fi trimise. Verifică net-ul.");
-            console.error(e);
         }
-    }
-
-    function toggleSearch() {
-        const isS = document.getElementById('screen-search').classList.toggle('active');
-        document.getElementById('screen-scout').classList.toggle('active', !isS);
-        document.getElementById('mode-btn').textContent = isS ? "BACK" : "INTEL SEARCH";
     }
 
     async function searchTeam() {
@@ -169,15 +158,18 @@
         try {
             const res = await fetch(`${SCRIPT}?team=${t}`);
             const d = await res.json();
-            if(d.error) alert("NU EXISTĂ DATE PENTRU ACEASTĂ ECHIPĂ");
-            else {
+            if(d.error) {
+                alert("NU EXISTĂ DATE");
+                document.getElementById('results').style.display = 'none';
+            } else {
                 document.getElementById('results').style.display = 'block';
                 document.getElementById('r-avg-gen').textContent = d.avgGeneral;
-                document.getElementById('r-avg-l3').textContent = d.avgLast3;
-                document.getElementById('r-strat').textContent = d.strategie;
+                document.getElementById('r-avg-rp').textContent = d.avgRP;
+                document.getElementById('r-avg-auto-ap').textContent = d.avgAutoAp;
+                document.getElementById('r-avg-auto-dep').textContent = d.avgAutoDep;
                 if(d.chartData) updateChart(d.chartData);
             }
-        } catch(e) { alert("EROARE LA SCANARE"); }
+        } catch(e) { alert("SCAN ERROR"); }
         document.getElementById('loader').style.display = 'none';
     }
 
@@ -186,10 +178,7 @@
         if(myChart) myChart.destroy();
         myChart = new Chart(ctx, {
             type: 'line',
-            data: { 
-                labels: pts.map((_,i)=>i+1), 
-                datasets: [{ data: pts, borderColor: '#e8c93a', tension: 0.3, fill: true, backgroundColor: 'rgba(232,201,58,0.1)' }] 
-            },
+            data: { labels: pts.map((_,i)=>i+1), datasets: [{ data: pts, borderColor: '#e8c93a', tension: 0.3, fill: true, backgroundColor: 'rgba(232,201,58,0.1)' }] },
             options: { plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { beginAtZero: true, grid: { color: '#333' } } }, maintainAspectRatio: false }
         });
     }

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>DECODE HUB V5.2</title>
+<title>DECODE HUB V6.0</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root { --yellow: #e8c93a; --black: #0a0a0a; --white: #f5f5f0; --border: #333; --red: #ff4d4d; --green: #00e676; --glow: 0 0 15px rgba(232, 201, 58, 0.3); }
@@ -11,45 +11,36 @@
   body { background: var(--black); color: var(--white); font-family: 'Space Mono', monospace; background-image: radial-gradient(circle at 50% 50%, #151515 0%, #0a0a0a 100%); }
 
   .nav-bar { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 2px solid var(--yellow); background: #000; position: sticky; top: 0; z-index: 100; }
-  h1 { font-family: 'Bebas Neue'; font-size: 2.5rem; color: var(--yellow); letter-spacing: 2px; text-shadow: var(--glow); }
+  h1 { font-family: 'Bebas Neue'; font-size: 2.5rem; color: var(--yellow); letter-spacing: 2px; }
   .btn-nav { background: transparent; border: 1px solid var(--yellow); color: var(--yellow); padding: 8px 15px; font-family: 'Bebas Neue'; font-size: 1.1rem; cursor: pointer; }
 
   .container { width: 100%; max-width: 450px; margin: auto; min-height: 100vh; }
-  .screen { display: none; padding: 25px 20px; animation: scanIn 0.4s ease; }
+  .screen { display: none; padding: 25px 20px; animation: scanIn 0.3s ease; }
   .screen.active { display: block; }
-  @keyframes scanIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes scanIn { from { opacity: 0; } to { opacity: 1; } }
 
   .sub { font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 25px; display: block; text-align: center; }
-  .card { background: rgba(26, 26, 26, 0.8); border: 1px solid var(--border); padding: 20px; margin-bottom: 15px; position: relative; }
-  .card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--yellow); }
-  label { font-size: 0.7rem; color: var(--yellow); text-transform: uppercase; display: block; margin-bottom: 10px; font-weight: bold; }
+  .card { background: rgba(26, 26, 26, 0.8); border: 1px solid var(--border); padding: 18px; margin-bottom: 12px; position: relative; border-left: 4px solid var(--yellow); }
+  label { font-size: 0.65rem; color: var(--yellow); text-transform: uppercase; display: block; margin-bottom: 8px; font-weight: bold; }
   
-  input, select { width: 100%; background: #000; border: 1px solid #444; padding: 15px; color: #fff; font-family: 'Space Mono'; outline: none; font-size: 1.1rem; }
+  input, select { width: 100%; background: #000; border: 1px solid #444; padding: 15px; color: #fff; font-family: 'Space Mono'; outline: none; margin-bottom: 5px; }
 
+  .btn-act { width: 100%; background: var(--yellow); color: #000; border: none; padding: 18px; font-family: 'Bebas Neue'; font-size: 1.6rem; cursor: pointer; box-shadow: var(--glow); }
   .counter-row { display: flex; align-items: center; gap: 15px; }
-  .btn-act { flex: 2; background: var(--yellow); color: #000; border: none; padding: 18px; font-family: 'Bebas Neue'; font-size: 1.6rem; cursor: pointer; box-shadow: var(--glow); }
-  .btn-undo { flex: 1; background: #222; color: #666; border: 1px solid #333; padding: 18px; font-size: 0.8rem; font-family: 'Space Mono'; cursor: pointer; }
-  .val { font-family: 'Bebas Neue'; font-size: 3rem; min-width: 60px; text-align: center; }
+  .val { font-family: 'Bebas Neue'; font-size: 3rem; min-width: 50px; text-align: center; }
+  .btn-undo { flex: 1; background: #222; color: #666; border: 1px solid #333; padding: 15px; font-family: 'Space Mono'; font-size: 0.8rem; }
 
-  .park-container { display: flex; align-items: center; gap: 10px; padding: 15px 20px; }
-  input[type="checkbox"] { width: 22px; height: 22px; cursor: pointer; accent-color: var(--yellow); }
-
-  .report-box { background: #000; border: 1px solid var(--yellow); padding: 25px; margin: 25px 0; }
-  .report-line { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #222; }
-  .rep-key { font-size: 0.8rem; color: #888; text-transform: uppercase; }
-  .rep-val { color: var(--yellow); font-family: 'Bebas Neue'; font-size: 1.8rem; }
-
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   #loader { display: none; position: fixed; top: 85px; left: 50%; transform: translateX(-50%); background: var(--yellow); color: #000; padding: 8px 20px; font-weight: bold; z-index: 200; font-size: 0.75rem; border-radius: 20px; }
-  #success-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 1000; flex-direction: column; align-items: center; justify-content: center; }
+  
+  /* Report styling */
+  .report-line { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #222; }
+  .rep-v { color: var(--yellow); font-family: 'Bebas Neue'; font-size: 1.5rem; }
 </style>
 </head>
 <body>
 
-<div id="loader">ACTIVE UPLINK...</div>
-
-<div id="success-overlay">
-    <h1 style="color: var(--white); font-family: 'Bebas Neue'; font-size: 3rem;">SENT</h1>
-</div>
+<div id="loader">ACCESSING DATABASE...</div>
 
 <div class="container">
     <div class="nav-bar">
@@ -59,80 +50,72 @@
 
     <div id="screen-scout" class="screen active">
         <span class="sub">// DATA ACQUISITION //</span>
-        <div style="display:grid; grid-template-columns: 1.3fr 0.7fr; gap:12px; margin-bottom:20px;">
-            <div>
-              <label>Team ID</label>
-              <input type="number" id="t-id" placeholder="0000" oninput="if(this.value.length > 5) this.value = this.value.slice(0, 5);">
-            </div>
-            <div>
-                <label>Position</label>
-                <select id="p-id">
-                    <option>R ap</option><option>R dep</option>
-                    <option>A ap</option><option>A dep</option>
-                </select>
+        <div class="grid-2">
+            <div><label>Team ID</label><input type="number" id="t-id" placeholder="0000"></div>
+            <div><label>Position</label>
+                <select id="p-id"><option>R ap</option><option>R dep</option><option>A ap</option><option>A dep</option></select>
             </div>
         </div>
         <div class="card"><label>Auto Scored</label>
-            <div class="counter-row">
-                <button class="btn-act" onclick="upd('a_in', 1)">+ PIECE</button>
-                <div class="val" id="v-a_in">0</div>
-                <button class="btn-undo" onclick="upd('a_in', -1)">Undo</button>
-            </div>
+            <div class="counter-row"><button class="btn-act" onclick="upd('a_in', 1)">+ PIECE</button><div class="val" id="v-a_in">0</div><button class="btn-undo" onclick="upd('a_in', -1)">Undo</button></div>
         </div>
         <div class="card" style="border-left-color: var(--red)"><label style="color:var(--red)">Auto Missed</label>
-            <div class="counter-row">
-                <button class="btn-act" style="background:var(--red); color:#fff;" onclick="upd('a_ms', 1)">+ MISS</button>
-                <div class="val" id="v-a_ms">0</div>
-                <button class="btn-undo" onclick="upd('a_ms', -1)">Undo</button>
-            </div>
+            <div class="counter-row"><button class="btn-act" style="background:var(--red); color:#fff;" onclick="upd('a_ms', 1)">+ MISS</button><div class="val" id="v-a_ms">0</div><button class="btn-undo" onclick="upd('a_ms', -1)">Undo</button></div>
         </div>
         <div class="card" style="border-left-color: var(--green)"><label style="color:var(--green)">TeleOp Pieces</label>
-            <div class="counter-row">
-                <button class="btn-act" style="background:var(--green); color:#fff;" onclick="upd('tele', 1)">+ PIECE</button>
-                <div class="val" id="v-tele">0</div>
-                <button class="btn-undo" onclick="upd('tele', -1)">Undo</button>
-            </div>
+            <div class="counter-row"><button class="btn-act" style="background:var(--green); color:#fff;" onclick="upd('tele', 1)">+ PIECE</button><div class="val" id="v-tele">0</div><button class="btn-undo" onclick="upd('tele', -1)">Undo</button></div>
         </div>
-        <div class="card park-container"><input type="checkbox" id="park"><label for="park">Parking</label></div>
+        <div class="card" style="display:flex; align-items:center; gap:10px;"><input type="checkbox" id="park" style="width:20px; height:20px;"><label for="park" style="margin:0">Parking</label></div>
         <div class="card"><label>Ranking Points (RP)</label><input type="number" id="rp-val" value="0"></div>
-        <button class="btn-act" style="width:100%; margin-top:10px; font-size: 2.2rem; height: 80px;" onclick="showReport()">COMPILE REPORT</button>
+        <button class="btn-act" style="height:80px; font-size:2rem;" onclick="showReport()">COMPILE REPORT</button>
     </div>
 
     <div id="screen-report" class="screen">
         <span class="sub">// VERIFICATION //</span>
-        <div class="report-box">
-            <div class="report-line"><span class="rep-key">TEAM ID</span><span class="rep-val" id="rep-team">--</span></div>
-            <div class="report-line"><span class="rep-key">AUTO DATA</span><span class="rep-val" id="rep-auto-raw">--</span></div>
-            <div class="report-line"><span class="rep-key">TELEOP TOTAL</span><span class="rep-val" id="rep-tele">--</span></div>
-            <div class="report-line"><span class="rep-key">POS</span><span class="rep-val" id="rep-pos">--</span></div>
+        <div class="card" style="border-left-color:var(--white); background:#000;">
+            <div class="report-line"><span>TEAM</span><span class="rep-v" id="rep-team"></span></div>
+            <div class="report-line"><span>AUTO</span><span class="rep-v" id="rep-auto"></span></div>
+            <div class="report-line"><span>TELEOP</span><span class="rep-v" id="rep-tele"></span></div>
         </div>
-        <button class="btn-act" style="width:100%; height: 70px; font-size: 1.8rem;" onclick="confirmAndSend()">INITIATE UPLINK</button>
-        <button class="btn-undo" style="width:100%; margin-top:15px; height: 50px;" onclick="backToScout()">EDIT</button>
+        <button class="btn-act" onclick="confirmAndSend()">INITIATE UPLINK</button>
+        <button class="btn-undo" style="width:100%; margin-top:10px; height:50px;" onclick="backToScout()">EDIT</button>
     </div>
 
     <div id="screen-search" class="screen">
-        <span class="sub">// INTEL SCANNER //</span>
+        <span class="sub">// DATABASE INTEL //</span>
         <div style="display:flex; gap:10px; margin-bottom:20px;">
             <input type="number" id="q-team" placeholder="Search ID...">
-            <button class="btn-act" style="width:100px;" onclick="searchTeam()">SCAN</button>
+            <button class="btn-act" style="width:80px;" onclick="searchTeam()">SCAN</button>
         </div>
         
         <div id="results" style="display:none;">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
-                <div class="card" style="text-align:center;"><label>AVG ALL</label><div id="r-avg-gen" style="font-family:'Bebas Neue'; font-size:3rem; color:var(--yellow);">--</div></div>
-                <div class="card" style="text-align:center;"><label>AVG LAST 3</label><div id="r-avg-l3" style="font-family:'Bebas Neue'; font-size:3rem; color:var(--green);">--</div></div>
+            <div class="grid-2">
+                <div class="card" style="text-align:center;"><label>AVG SCORE L3</label><div id="r-avg-l3" style="font-family:'Bebas Neue'; font-size:2.5rem; color:var(--green);">--</div></div>
+                <div class="card" style="text-align:center;"><label>TOTAL RPs (G)</label><div id="r-sum-rp" style="font-family:'Bebas Neue'; font-size:2.5rem; color:var(--yellow);">--</div></div>
             </div>
+            
+            <div class="card"><label>AVG AUTO PIECES (F - AVG ELEMENTS)</label><div id="r-avg-f" style="font-family:'Bebas Neue'; font-size:2rem; color:var(--white);">--</div></div>
 
-            <div class="card"><label>LAST 3 MATCH HISTORY</label><div id="r-s3" style="font-family:'Bebas Neue'; font-size:1.8rem; color:var(--white);">--</div></div>
-            <div class="card"><label>PARCARE (F)</label><div id="r-park" style="color:var(--yellow); font-weight:bold;">--</div></div>
-            <div class="card"><label>STRATEGIE (D)</label><div id="r-strat" style="font-size:0.9rem;">--</div></div>
-            <div class="card"><label>ALTCEVA (M)</label><div id="r-alt" style="font-size:0.85rem; color:#888;">--</div></div>
+            <div class="grid-2">
+                <div class="card"><label>POS (B)</label><div id="r-b">--</div></div>
+                <div class="card"><label>AUTO (C)</label><div id="r-c">--</div></div>
+            </div>
+            <div class="grid-2">
+                <div class="card"><label>SCORE (D)</label><div id="r-d">--</div></div>
+                <div class="card"><label>RP MATCH (E)</label><div id="r-e">--</div></div>
+            </div>
+            
+            <div class="card"><label>HISTORY (D - L3)</label><div id="r-hist">--</div></div>
+
+            <div class="card"><label>STRATEGIE (D)</label><div id="r-strat" style="font-size:0.85rem;">--</div></div>
+            <div class="card"><label>PARK (F)</label><div id="r-park">--</div></div>
+            <div class="card"><label>ALTCEVA (M)</label><div id="r-alt" style="font-size:0.85rem;">--</div></div>
         </div>
     </div>
 </div>
 
 <script>
-    const SCRIPT = "https://script.google.com/macros/s/AKfycbzQ8NObaOWt6eDS4Y4XUn9uxpTYFEJr-5XAbkcZwoclMDBPtx70_OmeX37b_dkSUtyF/exec";
+    const SCRIPT = "https://script.google.com/macros/s/AKfycbyPwSzQS52syFe-rUewcDRZBaBc7CEAbwAzs0uE2sgDjmsOBbJLBlfBui570HCuxEg/exec";
     let state = { a_in: 0, a_ms: 0, tele: 0 };
 
     function upd(k, v) { state[k] = Math.max(0, state[k] + v); document.getElementById('v-'+k).textContent = state[k]; }
@@ -140,12 +123,9 @@
     function showReport() {
         const team = document.getElementById('t-id').value;
         if(!team) return alert("NEED ID");
-        const totalAuto = state.a_in + state.a_ms;
-        const parkStr = document.getElementById('park').checked ? 'P' : '';
         document.getElementById('rep-team').textContent = team;
-        document.getElementById('rep-auto-raw').textContent = `${state.a_in}(${totalAuto})${parkStr}`;
+        document.getElementById('rep-auto').textContent = `${state.a_in}(${state.a_in + state.a_ms})${document.getElementById('park').checked ? 'P' : ''}`;
         document.getElementById('rep-tele').textContent = state.tele;
-        document.getElementById('rep-pos').textContent = document.getElementById('p-id').value;
         document.getElementById('screen-scout').classList.remove('active');
         document.getElementById('screen-report').classList.add('active');
     }
@@ -154,20 +134,18 @@
 
     async function confirmAndSend() {
         document.getElementById('loader').style.display = 'block';
-        const totalAuto = state.a_in + state.a_ms;
-        const autoData = `${state.a_in}(${totalAuto})${document.getElementById('park').checked ? 'P' : ''}`;
-        const payload = { team: document.getElementById('t-id').value, position: document.getElementById('p-id').value, autoData: autoData, scor: state.tele, rp: document.getElementById('rp-val').value };
+        const auto = `${state.a_in}(${state.a_in + state.a_ms})${document.getElementById('park').checked ? 'P' : ''}`;
+        const payload = { team: document.getElementById('t-id').value, position: document.getElementById('p-id').value, autoData: auto, scor: state.tele, rp: document.getElementById('rp-val').value };
         try {
             await fetch(SCRIPT, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-            document.getElementById('success-overlay').style.display = 'flex';
-            setTimeout(() => location.reload(), 1500);
+            alert("UPLINK SUCCESSFUL");
+            location.reload();
         } catch(e) { alert("ERROR"); document.getElementById('loader').style.display = 'none'; }
     }
 
     function toggleSearch() {
         const isSearch = document.getElementById('screen-search').classList.toggle('active');
         document.getElementById('screen-scout').classList.toggle('active', !isSearch);
-        document.getElementById('screen-report').classList.remove('active');
         document.getElementById('mode-btn').textContent = isSearch ? "BACK" : "INTEL SEARCH";
     }
 
@@ -178,14 +156,22 @@
         try {
             const response = await fetch(`${SCRIPT}?team=${t}`);
             const d = await response.json();
-            document.getElementById('results').style.display = 'block';
-            document.getElementById('r-avg-gen').textContent = d.avgGeneral;
-            document.getElementById('r-avg-l3').textContent = d.avgLast3;
-            document.getElementById('r-s3').textContent = d.last3Scores;
-            document.getElementById('r-park').textContent = d.parcare;
-            document.getElementById('r-strat').textContent = d.strategie;
-            document.getElementById('r-alt').textContent = d.altceva;
-        } catch(e) { alert("NOT FOUND"); }
+            if(d.error) { alert("NOT FOUND"); }
+            else {
+                document.getElementById('results').style.display = 'block';
+                document.getElementById('r-b').textContent = d.colB;
+                document.getElementById('r-c').textContent = d.colC;
+                document.getElementById('r-d').textContent = d.colD;
+                document.getElementById('r-e').textContent = d.colE;
+                document.getElementById('r-avg-f').textContent = d.avgColF;
+                document.getElementById('r-sum-rp').textContent = d.sumRPs;
+                document.getElementById('r-avg-l3').textContent = d.avgLast3;
+                document.getElementById('r-hist').textContent = d.history;
+                document.getElementById('r-strat').textContent = d.strategie;
+                document.getElementById('r-park').textContent = d.parcare;
+                document.getElementById('r-alt').textContent = d.altceva;
+            }
+        } catch(e) { alert("SCAN FAILED"); }
         document.getElementById('loader').style.display = 'none';
     }
 </script>

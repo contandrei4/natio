@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>DECODE HUB V6.0</title>
+<title>DECODE HUB V7.5</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root { --yellow: #e8c93a; --black: #0a0a0a; --white: #f5f5f0; --border: #333; --red: #ff4d4d; --green: #00e676; --glow: 0 0 15px rgba(232, 201, 58, 0.3); }
@@ -19,9 +20,8 @@
   .screen.active { display: block; }
   @keyframes scanIn { from { opacity: 0; } to { opacity: 1; } }
 
-  .sub { font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 25px; display: block; text-align: center; }
   .card { background: rgba(26, 26, 26, 0.8); border: 1px solid var(--border); padding: 18px; margin-bottom: 12px; position: relative; border-left: 4px solid var(--yellow); }
-  label { font-size: 0.65rem; color: var(--yellow); text-transform: uppercase; display: block; margin-bottom: 8px; font-weight: bold; }
+  label { font-size: 0.7rem; color: var(--yellow); text-transform: uppercase; display: block; margin-bottom: 8px; font-weight: bold; }
   
   input, select { width: 100%; background: #000; border: 1px solid #444; padding: 15px; color: #fff; font-family: 'Space Mono'; outline: none; margin-bottom: 5px; }
 
@@ -32,15 +32,12 @@
 
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   #loader { display: none; position: fixed; top: 85px; left: 50%; transform: translateX(-50%); background: var(--yellow); color: #000; padding: 8px 20px; font-weight: bold; z-index: 200; font-size: 0.75rem; border-radius: 20px; }
-  
-  /* Report styling */
-  .report-line { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #222; }
-  .rep-v { color: var(--yellow); font-family: 'Bebas Neue'; font-size: 1.5rem; }
+  .val-big { font-family: 'Bebas Neue'; font-size: 2.5rem; line-height: 1; }
 </style>
 </head>
 <body>
 
-<div id="loader">ACCESSING DATABASE...</div>
+<div id="loader">SYNCHRONIZING...</div>
 
 <div class="container">
     <div class="nav-bar">
@@ -49,11 +46,13 @@
     </div>
 
     <div id="screen-scout" class="screen active">
-        <span class="sub">// DATA ACQUISITION //</span>
         <div class="grid-2">
             <div><label>Team ID</label><input type="number" id="t-id" placeholder="0000"></div>
             <div><label>Position</label>
-                <select id="p-id"><option>R ap</option><option>R dep</option><option>A ap</option><option>A dep</option></select>
+                <select id="p-id">
+                    <option value="A ap">A ap</option><option value="R ap">R ap</option>
+                    <option value="A dep">A dep</option><option value="R dep">R dep</option>
+                </select>
             </div>
         </div>
         <div class="card"><label>Auto Scored</label>
@@ -71,44 +70,39 @@
     </div>
 
     <div id="screen-report" class="screen">
-        <span class="sub">// VERIFICATION //</span>
         <div class="card" style="border-left-color:var(--white); background:#000;">
-            <div class="report-line"><span>TEAM</span><span class="rep-v" id="rep-team"></span></div>
-            <div class="report-line"><span>AUTO</span><span class="rep-v" id="rep-auto"></span></div>
-            <div class="report-line"><span>TELEOP</span><span class="rep-v" id="rep-tele"></span></div>
+            <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #222;"><span>TEAM</span><span id="rep-team" class="val-big" style="color:var(--yellow)"></span></div>
+            <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #222;"><span>AUTO</span><span id="rep-auto" class="val-big" style="color:var(--yellow)"></span></div>
+            <div style="display:flex; justify-content:space-between; padding:10px 0;"><span>TELEOP</span><span id="rep-tele" class="val-big" style="color:var(--yellow)"></span></div>
         </div>
         <button class="btn-act" onclick="confirmAndSend()">INITIATE UPLINK</button>
         <button class="btn-undo" style="width:100%; margin-top:10px; height:50px;" onclick="backToScout()">EDIT</button>
     </div>
 
     <div id="screen-search" class="screen">
-        <span class="sub">// DATABASE INTEL //</span>
         <div style="display:flex; gap:10px; margin-bottom:20px;">
-            <input type="number" id="q-team" placeholder="Search ID...">
+            <input type="number" id="q-team" placeholder="Team ID...">
             <button class="btn-act" style="width:80px;" onclick="searchTeam()">SCAN</button>
         </div>
         
         <div id="results" style="display:none;">
             <div class="grid-2">
-                <div class="card" style="text-align:center;"><label>AVG SCORE L3</label><div id="r-avg-l3" style="font-family:'Bebas Neue'; font-size:2.5rem; color:var(--green);">--</div></div>
-                <div class="card" style="text-align:center;"><label>TOTAL RPs (G)</label><div id="r-sum-rp" style="font-family:'Bebas Neue'; font-size:2.5rem; color:var(--yellow);">--</div></div>
+                <div class="card" style="text-align:center;"><label>AVG SCORE (ALL)</label><div id="r-avg-gen" class="val-big">--</div></div>
+                <div class="card" style="text-align:center;"><label>AVG SCORE (L3)</label><div id="r-avg-l3" class="val-big" style="color:var(--green);">--</div></div>
             </div>
-            
-            <div class="card"><label>AVG AUTO PIECES (F - AVG ELEMENTS)</label><div id="r-avg-f" style="font-family:'Bebas Neue'; font-size:2rem; color:var(--white);">--</div></div>
+
+            <div class="card">
+                <label>PERFORMANCE CHART (LAST 10)</label>
+                <div style="height: 180px;"><canvas id="scoreChart"></canvas></div>
+            </div>
 
             <div class="grid-2">
-                <div class="card"><label>POS (B)</label><div id="r-b">--</div></div>
-                <div class="card"><label>AUTO (C)</label><div id="r-c">--</div></div>
+                <div class="card"><label>AUTO AP (AVG)</label><div id="r-ap" class="val-big" style="color:var(--yellow)">--</div></div>
+                <div class="card"><label>AUTO DEP (AVG)</label><div id="r-dep" class="val-big">--</div></div>
             </div>
-            <div class="grid-2">
-                <div class="card"><label>SCORE (D)</label><div id="r-d">--</div></div>
-                <div class="card"><label>RP MATCH (E)</label><div id="r-e">--</div></div>
-            </div>
-            
-            <div class="card"><label>HISTORY (D - L3)</label><div id="r-hist">--</div></div>
 
             <div class="card"><label>STRATEGIE (D)</label><div id="r-strat" style="font-size:0.85rem;">--</div></div>
-            <div class="card"><label>PARK (F)</label><div id="r-park">--</div></div>
+            <div class="card"><label>PARCARE (F)</label><div id="r-park">--</div></div>
             <div class="card"><label>ALTCEVA (M)</label><div id="r-alt" style="font-size:0.85rem;">--</div></div>
         </div>
     </div>
@@ -117,6 +111,7 @@
 <script>
     const SCRIPT = "https://script.google.com/macros/s/AKfycbyPwSzQS52syFe-rUewcDRZBaBc7CEAbwAzs0uE2sgDjmsOBbJLBlfBui570HCuxEg/exec";
     let state = { a_in: 0, a_ms: 0, tele: 0 };
+    let myChart = null;
 
     function upd(k, v) { state[k] = Math.max(0, state[k] + v); document.getElementById('v-'+k).textContent = state[k]; }
 
@@ -159,20 +154,49 @@
             if(d.error) { alert("NOT FOUND"); }
             else {
                 document.getElementById('results').style.display = 'block';
-                document.getElementById('r-b').textContent = d.colB;
-                document.getElementById('r-c').textContent = d.colC;
-                document.getElementById('r-d').textContent = d.colD;
-                document.getElementById('r-e').textContent = d.colE;
-                document.getElementById('r-avg-f').textContent = d.avgColF;
-                document.getElementById('r-sum-rp').textContent = d.sumRPs;
+                document.getElementById('r-avg-gen').textContent = d.avgGeneral;
                 document.getElementById('r-avg-l3').textContent = d.avgLast3;
-                document.getElementById('r-hist').textContent = d.history;
+                document.getElementById('r-ap').textContent = d.avgAutoAp;
+                document.getElementById('r-dep').textContent = d.avgAutoDep;
                 document.getElementById('r-strat').textContent = d.strategie;
                 document.getElementById('r-park').textContent = d.parcare;
                 document.getElementById('r-alt').textContent = d.altceva;
+                
+                updateChart(d.chartData);
             }
         } catch(e) { alert("SCAN FAILED"); }
         document.getElementById('loader').style.display = 'none';
+    }
+
+    function updateChart(dataPoints) {
+        const ctx = document.getElementById('scoreChart').getContext('2d');
+        if(myChart) myChart.destroy();
+        myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: dataPoints.map((_, i) => i + 1),
+                datasets: [{
+                    label: 'Score',
+                    data: dataPoints,
+                    borderColor: '#e8c93a',
+                    backgroundColor: 'rgba(232, 201, 58, 0.1)',
+                    borderWidth: 3,
+                    tension: 0.3,
+                    fill: true,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#e8c93a'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { 
+                    y: { beginAtZero: true, grid: { color: '#222' }, ticks: { color: '#666' } },
+                    x: { display: false }
+                }
+            }
+        });
     }
 </script>
 </body>

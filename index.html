@@ -3,115 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DECODE HUB V28.0</title>
+    <title>DECODE HUB V31.0</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --yellow: #e8c93a; --black: #0a0a0a; --white: #f5f5f0; --red: #ff4d4d; --green: #00e676; --blue: #3498db; --purple: #9b59b6; --orange: #ff9800; }
+        :root { --yellow: #e8c93a; --black: #0a0a0a; --white: #f5f5f0; --red: #ff4d4d; --blue: #3498db; --green: #00e676; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Space Mono', monospace; }
         body { background: var(--black); color: var(--white); overflow-x: hidden; }
-        .swal2-popup { background: #1a1a1a !important; color: #fff !important; border: 2px solid var(--yellow) !important; }
         .nav-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 2px solid var(--yellow); background: #000; position: sticky; top: 0; z-index: 100; }
-        h1 { font-family: 'Bebas Neue'; font-size: 2.2rem; color: var(--yellow); letter-spacing: 1px; }
-        .btn-nav { background: transparent; border: 1px solid var(--yellow); color: var(--yellow); padding: 5px 12px; font-family: 'Bebas Neue'; cursor: pointer; }
+        h1 { font-family: 'Bebas Neue'; font-size: 2.2rem; color: var(--yellow); }
         .container { width: 100%; max-width: 450px; margin: auto; padding: 10px; }
         .screen { display: none; }
         .screen.active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .card { background: #1a1a1a; border: 1px solid #333; padding: 15px; margin-bottom: 10px; border-left: 4px solid var(--yellow); }
-        label { font-size: 0.7rem; color: var(--yellow); text-transform: uppercase; font-weight: bold; margin-bottom: 8px; display: block; }
+        label { font-size: 0.7rem; color: var(--yellow); text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 5px; }
         input, select { width: 100%; background: #000; border: 1px solid #444; padding: 12px; color: #fff; margin-bottom: 5px; font-size: 1rem; }
-        .btn-act { width: 100%; background: var(--yellow); color: #000; border: none; padding: 15px; font-family: 'Bebas Neue'; font-size: 1.5rem; cursor: pointer; transition: 0.2s; }
+        .btn-act { width: 100%; background: var(--yellow); color: #000; border: none; padding: 15px; font-family: 'Bebas Neue'; font-size: 1.5rem; cursor: pointer; }
+        .val { font-family: 'Bebas Neue'; font-size: 2.8rem; min-width: 60px; text-align: center; }
         .counter-row { display: flex; align-items: center; gap: 10px; }
-        .val { font-family: 'Bebas Neue'; font-size: 2.8rem; min-width: 50px; text-align: center; color: var(--white); }
-        .btn-undo { flex: 1; background: #262626; color: #888; border: 1px solid #333; padding: 12px; font-size: 0.8rem; cursor: pointer; }
+        .btn-undo { flex: 1; background: #262626; color: #888; border: 1px solid #333; padding: 12px; font-size: 0.8rem; }
         #loader { display: none; position: fixed; top: 75px; left: 50%; transform: translateX(-50%); background: var(--yellow); color: #000; padding: 5px 15px; z-index: 200; font-weight: bold; border-radius: 10px; }
-        .val-intel { font-family: 'Bebas Neue'; font-size: 2rem; color: var(--yellow); }
     </style>
 </head>
 <body>
 
-<div id="loader">SINCRONIZARE...</div>
+<div id="loader">UPLINKING...</div>
 
 <div class="container">
     <div class="nav-bar">
         <h1>DECODE</h1>
-        <button class="btn-nav" id="mode-btn" onclick="toggleSearch()">INTEL SEARCH</button>
+        <button class="btn-nav" id="mode-btn" onclick="toggleSearch()" style="background:transparent; border:1px solid var(--yellow); color:var(--yellow); padding:5px; font-family:'Bebas Neue'">INTEL SEARCH</button>
     </div>
 
     <div id="screen-scout" class="screen active">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px; margin-bottom: 10px;">
             <div><label>Team ID</label><input type="number" id="t-id" placeholder="19000"></div>
-            <div><label>Match #</label><input type="text" id="m-num" placeholder="Q12"></div>
+            <div><label>Match #</label><input type="number" id="m-num" placeholder="12"></div>
         </div>
         
-        <div style="margin-bottom: 10px;"><label>Position</label>
-            <select id="p-id">
-                <option value="R ap">R ap</option><option value="R dep">R dep</option>
-                <option value="A ap">A ap</option><option value="A dep">A dep</option>
-            </select>
+        <label>Position</label>
+        <select id="p-id" style="margin-bottom:15px; border-left: 5px solid var(--yellow);">
+            <option value="R ap">RED - Aproape</option>
+            <option value="R dep">RED - Departe</option>
+            <option value="A ap">BLUE - Aproape</option>
+            <option value="A dep">BLUE - Departe</option>
+        </select>
+
+        <div class="card"><label>Auto Scored</label>
+            <div class="counter-row"><button class="btn-act" onclick="upd('a_in', 1)">+ PIECE</button><div class="val" id="v-a_in">0</div><button class="btn-undo" onclick="upd('a_in', -1)">Undo</button></div>
         </div>
 
-        <div class="card"><label>Auto Scored</label><div class="counter-row"><button class="btn-act" onclick="upd('a_in', 1)">+ PIECE</button><div class="val" id="v-a_in">0</div><button class="btn-undo" onclick="upd('a_in', -1)">Undo</button></div></div>
-        <div class="card" style="border-left-color: var(--red)"><label style="color:var(--red)">Auto Missed</label><div class="counter-row"><button class="btn-act" style="background:var(--red); color:white" onclick="upd('a_ms', 1)">+ MISS</button><div class="val" id="v-a_ms">0</div><button class="btn-undo" onclick="upd('a_ms', -1)">Undo</button></div></div>
-        <div class="card" style="border-left-color: var(--green)"><label style="color:var(--green)">TeleOp Pieces</label><div class="counter-row"><button class="btn-act" style="background:var(--green); color:white" onclick="upd('tele', 1)">+ PIECE</button><div class="val" id="v-tele">0</div><button class="btn-undo" onclick="upd('tele', -1)">Undo</button></div></div>
+        <div class="card" style="border-left-color: var(--red)"><label style="color:var(--red)">Auto Missed</label>
+            <div class="counter-row"><button class="btn-act" style="background:var(--red); color:white" onclick="upd('a_ms', 1)">+ MISS</button><div class="val" id="v-a_ms">0</div><button class="btn-undo" onclick="upd('a_ms', -1)">Undo</button></div>
+        </div>
+
+        <div class="card" style="border-left-color: var(--green)"><label style="color:var(--green)">TeleOp Pieces</label>
+            <div class="counter-row"><button class="btn-act" style="background:var(--green); color:white" onclick="upd('tele', 1)">+ PIECE</button><div class="val" id="v-tele">0</div><button class="btn-undo" onclick="upd('tele', -1)">Undo</button></div>
+        </div>
         
-        <div class="card" style="display:flex; align-items:center; gap:12px;"><input type="checkbox" id="park" style="width:25px; height:25px;"><label for="park" style="margin:0">Parking Achieved</label></div>
-        <div class="card"><label>Ranking Points (RP)</label><input type="number" id="rp-val" value="0"></div>
-        
+        <div class="card" style="display:flex; align-items:center; gap:12px;">
+            <input type="checkbox" id="park" style="width:25px; height:25px;"><label for="park" style="margin:0">Ascent / Park</label>
+        </div>
+
+        <div class="card"><label>RP Value</label><input type="number" id="rp-val" value="0"></div>
         <button class="btn-act" style="height:70px; font-size:1.8rem;" onclick="showReport()">GENERATE REPORT</button>
     </div>
 
     <div id="screen-report" class="screen">
-        <div class="card" style="background:#000; border: 2px solid var(--yellow); padding: 30px 15px;">
-            <label style="text-align:center; font-size: 1rem; margin-bottom: 20px; color: var(--yellow)">MISSION REPORT</label>
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>MATCH</span><span id="rep-match" style="color:var(--white)"></span></div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom: 1px solid #333;"><span>TEAM ID</span><span id="rep-team" class="val-intel"></span></div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom: 1px solid #333;"><span>AUTO</span><span id="rep-auto" class="val-intel"></span></div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:20px; border-bottom: 1px solid #333;"><span>TELEOP</span><span id="rep-tele" class="val-intel"></span></div>
+        <div class="card" style="background:#000; border: 2px solid var(--yellow); padding: 20px;">
+            <label style="text-align:center; font-size: 1.2rem; color: var(--yellow)">MISSION SUMMARY</label>
+            <p>MATCH: <span id="rep-match" style="color:var(--yellow)"></span></p>
+            <p>TEAM: <span id="rep-team"></span></p>
+            <p>AUTO: <span id="rep-auto"></span></p>
+            <p>TELE: <span id="rep-tele"></span></p>
         </div>
         <button class="btn-act" style="background: var(--green); color: black;" onclick="confirmAndSend()">CONFIRM & UPLINK</button>
-        <button class="btn-undo" style="width:100%; margin-top:15px; height:50px; font-family:'Bebas Neue'; font-size:1.2rem" onclick="cancelReport()">BACK</button>
+        <button class="btn-undo" style="width:100%; margin-top:10px;" onclick="cancelReport()">BACK</button>
     </div>
 
     <div id="screen-search" class="screen">
-        <div style="display:flex; gap:10px; margin-bottom:15px"><input type="number" id="q-team" placeholder="Team ID..."><button class="btn-act" style="width:80px" onclick="searchTeam()">SCAN</button></div>
+        <div style="display:flex; gap:10px; margin-bottom:15px">
+            <input type="number" id="q-team" placeholder="Team ID...">
+            <button class="btn-act" style="width:80px" onclick="searchTeam()">SCAN</button>
+        </div>
         <div id="results" style="display:none">
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom: 10px">
-                <div class="card"><label>AVG TELE (ALL)</label><div id="r-avg-gen" class="val-intel">--</div></div>
-                <div class="card" style="border-left-color: var(--blue)"><label style="color:var(--blue)">AVG SCOR (L3)</label><div id="r-avg-3" class="val-intel" style="color:var(--blue)">--</div></div>
-            </div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom: 10px">
-                <div class="card" style="border-left-color: var(--green)"><label style="color:var(--green)">MAX AUTO AP.</label><div id="r-max-ap" class="val-intel" style="color:var(--green)">--</div></div>
-                <div class="card" style="border-left-color: var(--purple)"><label style="color:var(--purple)">MAX AUTO DEP.</label><div id="r-max-dep" class="val-intel" style="color:var(--purple)">--</div></div>
-            </div>
-            <div class="card" style="border-left-color: var(--orange)"><label style="color:var(--orange)">TELEOP STRATEGIE</label><div id="r-strategy" style="font-weight:bold; color:var(--white); font-size:0.9rem;">--</div></div>
-            <div class="card"><label>EVOLUTIE TELEOP</label><div style="height:150px"><canvas id="scoreChart"></canvas></div></div>
+            <div class="card"><label>AVG TELE</label><div id="r-avg-gen" style="font-size:2rem; color:var(--yellow)">--</div></div>
+            <div class="card"><label>Max Auto (AP/DEP)</label><div style="font-size:1.2rem"><span id="r-max-ap" style="color:var(--green)">--</span> / <span id="r-max-dep" style="color:var(--blue)">--</span></div></div>
+            <div class="card"><label>Evolution</label><div style="height:120px"><canvas id="scoreChart"></canvas></div></div>
         </div>
     </div>
 </div>
 
 <script>
-    const SCRIPT = "https://script.google.com/macros/s/AKfycby7dYBqw4Z4isyxPhG6VDkp2lpYwqcSvVra6L8AluT0faj24Ycv6zpwNn6RoaxIRloR/exec"; 
+    const SCRIPT = "https://script.google.com/macros/s/AKfycbwpf6AFNY8TsFvKiqGLiiolmw8xG8TTBL8escENU0HrPURX-ErRM-___PVp2MolFv6A/exec"; 
     let state = { a_in: 0, a_ms: 0, tele: 0 };
     let myChart = null;
 
     function upd(k, v) { state[k] = Math.max(0, state[k] + v); document.getElementById('v-' + k).textContent = state[k]; }
-    
     function toggleSearch() {
         const isS = document.getElementById('screen-search').classList.toggle('active');
         document.getElementById('screen-scout').classList.toggle('active', !isS);
-        document.getElementById('mode-btn').textContent = isS ? "BACK" : "INTEL SEARCH";
     }
 
     function showReport() {
-        const t = document.getElementById('t-id').value; if(!t) return Swal.fire({icon:'error', title:'TEAM ID!'});
-        document.getElementById('rep-team').textContent = t;
-        document.getElementById('rep-match').textContent = document.getElementById('m-num').value || "N/A";
+        const team = document.getElementById('t-id').value;
+        const match = document.getElementById('m-num').value;
+        const pos = document.getElementById('p-id').value;
+        if(!team || !match) return Swal.fire('Eroare', 'Team ID și Match # sunt obligatorii!', 'error');
+
+        document.getElementById('rep-team').textContent = team;
+        document.getElementById('rep-match').textContent = pos.charAt(0) + match;
         const p = document.getElementById('park').checked ? "P" : "";
         document.getElementById('rep-auto').textContent = `${state.a_in}(${state.a_in+state.a_ms})${p}`;
         document.getElementById('rep-tele').textContent = state.tele;
+        
         document.getElementById('screen-scout').classList.remove('active');
         document.getElementById('screen-report').classList.add('active');
     }
@@ -122,17 +129,18 @@
         document.getElementById('loader').style.display = 'block';
         const team = document.getElementById('t-id').value;
         const pos = document.getElementById('p-id').value;
-        const matchNum = document.getElementById('m-num').value;
+        const mNum = document.getElementById('m-num').value;
         const park = document.getElementById('park').checked ? "P" : "";
-        const auto = `${state.a_in}(${state.a_in + state.a_ms})${park}`;
+        const auto = `${state.a_in}(${state.a_in+state.a_ms})${park}`;
         const rp = document.getElementById('rp-val').value;
-        const url = `${SCRIPT}?team=${team}&position=${encodeURIComponent(pos)}&autoData=${encodeURIComponent(auto)}&scor=${state.tele}&rp=${rp}&matchNum=${encodeURIComponent(matchNum)}`;
+
+        const url = `${SCRIPT}?team=${team}&position=${encodeURIComponent(pos)}&autoData=${encodeURIComponent(auto)}&scor=${state.tele}&rp=${rp}&matchNum=${mNum}`;
         
         try {
-            await fetch(url, { method: 'GET', mode: 'no-cors' });
+            const resp = await fetch(url, { method: 'GET', mode: 'no-cors' });
             document.getElementById('loader').style.display = 'none';
             Swal.fire({ title: 'SUCCESS', icon: 'success', timer: 1000, showConfirmButton: false }).then(() => location.reload());
-        } catch(e) { document.getElementById('loader').style.display = 'none'; Swal.fire({ icon: 'error', title: 'FAILED' }); }
+        } catch(e) { document.getElementById('loader').style.display = 'none'; Swal.fire('Eroare', 'Verifică noul URL de Deployment!', 'error'); }
     }
 
     async function searchTeam() {
@@ -143,12 +151,10 @@
             const d = await res.json();
             document.getElementById('results').style.display = 'block';
             document.getElementById('r-avg-gen').textContent = d.avgGeneral;
-            document.getElementById('r-avg-3').textContent = d.avgLast3;
             document.getElementById('r-max-ap').textContent = d.maxAutoAp;
             document.getElementById('r-max-dep').textContent = d.maxAutoDep;
-            document.getElementById('r-strategy').textContent = d.teleopStrategy;
             if(d.chartData) updateChart(d.chartData);
-        } catch(e) { Swal.fire({ icon: 'error', title: 'ERROR' }); }
+        } catch(e) { Swal.fire('Eroare', 'Echipa nu există sau URL greșit', 'error'); }
         document.getElementById('loader').style.display = 'none';
     }
 
@@ -157,8 +163,8 @@
         if(myChart) myChart.destroy();
         myChart = new Chart(ctx, {
             type: 'line',
-            data: { labels: pts.map((_,i)=>i+1), datasets: [{ data: pts, borderColor: '#e8c93a', tension: 0.3, fill: true, backgroundColor: 'rgba(232,201,58,0.1)' }] },
-            options: { plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { beginAtZero: true, grid: { color: '#333' } } }, maintainAspectRatio: false }
+            data: { labels: pts.map((_,i)=>i+1), datasets: [{ data: pts, borderColor: '#e8c93a', tension: 0.3 }] },
+            options: { plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { beginAtZero: true } }, maintainAspectRatio: false }
         });
     }
 </script>

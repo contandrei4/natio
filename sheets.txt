@@ -1,26 +1,42 @@
 function doGet(e) {
-  if (e.parameter.scor !== undefined) {
-    return saveScoutingData(e);
-  } else if (e.parameter.team) {
-    return scanTeamData(e.parameter.team);
+  try {
+    // Verificăm dacă primim date de scouting sau cerere de scanare
+    if (e.parameter.scor !== undefined) {
+      return saveScoutingData(e);
+    } else if (e.parameter.team) {
+      return scanTeamData(e.parameter.team);
+    }
+    return ContentService.createTextOutput("Eroare: Lipsesc parametrii.").setMimeType(ContentService.MimeType.TEXT);
+  } catch (err) {
+    return ContentService.createTextOutput("Eroare Script: " + err.toString()).setMimeType(ContentService.MimeType.TEXT);
   }
-  return ContentService.createTextOutput("Eroare: Lipsesc parametrii.").setMimeType(ContentService.MimeType.TEXT);
 }
 
 function saveScoutingData(e) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var rawSheet = ss.getSheetByName("RawData");
+  
+  // Creăm sheet-ul dacă nu există
   if (!rawSheet) {
     rawSheet = ss.insertSheet("RawData");
-    rawSheet.appendRow(["Echipa", "R ap", "R dep", "A ap", "A dep", "Scor", "RP", "DATA", "Meci"]);
+    rawSheet.appendRow(["Echipa", "R ap", "R dep", "A ap", "A dep", "Scor", "RP", "DATA", "Meci: Auto"]);
   }
   
+  var teamId = e.parameter.team ? e.parameter.team.toString().trim() : "0";
+  var pos = e.parameter.position || "R ap"; 
+  var mNum = e.parameter.matchNum || "?";
+  var autoData = e.parameter.autoData || "0(0)";
+  var teleScor = e.parameter.scor || "0";
+  var rp = e.parameter.rp || "0";
+  
+  // Determinăm alianța din prima literă a poziției (R sau A)
+  var allianceLetter = pos.charAt(0); 
+  var matchAutoEntry = allianceLetter + mNum + ": " + autoData;
+
   var data = rawSheet.getDataRange().getValues();
-  var teamId = e.parameter.team.toString().trim();
-  var pos = e.parameter.position; 
-  var mNum = e.parameter.matchNum || "-";
   var rowIndex = -1;
 
+  // Căutăm dacă echipa există deja
   for (var i = 0; i < data.length; i++) {
     if (data[i][0].toString().replace(/'/g, "").trim() === teamId) {
       rowIndex = i + 1;
@@ -32,40 +48,41 @@ function saveScoutingData(e) {
   var targetCol = colMap[pos] || 2; 
 
   if (rowIndex !== -1) {
+    // Actualizăm rândul existent prin concatenare
     var oldAuto = rawSheet.getRange(rowIndex, targetCol).getValue().toString();
     var oldTele = rawSheet.getRange(rowIndex, 6).getValue().toString(); 
     var oldRP = rawSheet.getRange(rowIndex, 7).getValue().toString(); 
-    var oldMatch = rawSheet.getRange(rowIndex, 9).getValue().toString();
+    var oldMatchInfo = rawSheet.getRange(rowIndex, 9).getValue().toString();
 
-    var newAuto = oldAuto ? oldAuto + ", " + e.parameter.autoData : e.parameter.autoData;
-    var newTele = oldTele ? oldTele + ", " + e.parameter.scor : e.parameter.scor;
-    var newRP = oldRP ? oldRP + ", " + e.parameter.rp : e.parameter.rp;
-    var newMatch = oldMatch ? oldMatch + ", " + mNum : mNum;
+    var newAuto = oldAuto ? oldAuto + ", " + autoData : autoData;
+    var newTele = oldTele ? oldTele + ", " + teleScor : teleScor;
+    var newRP = oldRP ? oldRP + ", " + rp : rp;
+    var newMatchInfo = oldMatchInfo ? oldMatchInfo + ", " + matchAutoEntry : matchAutoEntry;
 
     rawSheet.getRange(rowIndex, targetCol).setValue("'" + newAuto.replace(/'/g, ""));
     rawSheet.getRange(rowIndex, 6).setValue("'" + newTele.replace(/'/g, ""));
     rawSheet.getRange(rowIndex, 7).setValue("'" + newRP.replace(/'/g, ""));
     rawSheet.getRange(rowIndex, 8).setValue(new Date());
-    rawSheet.getRange(rowIndex, 9).setValue("'" + newMatch.replace(/'/g, ""));
+    rawSheet.getRange(rowIndex, 9).setValue("'" + newMatchInfo.replace(/'/g, ""));
     
     return ContentService.createTextOutput("SUCCESS_UPDATED");
   } else {
-    // Rand nou: Echipa, R_ap, R_dep, A_ap, A_dep, Scor, RP, DATA, Meci
-    var newRow = ["'" + teamId, "", "", "", "", "'" + e.parameter.scor, "'" + e.parameter.rp, new Date(), "'" + mNum];
-    newRow[targetCol - 1] = "'" + e.parameter.autoData;
+    // Adăugăm un rând nou
+    var newRow = ["'" + teamId, "", "", "", "", "'" + teleScor, "'" + rp, new Date(), "'" + matchAutoEntry];
+    newRow[targetCol - 1] = "'" + autoData;
     rawSheet.appendRow(newRow);
     return ContentService.createTextOutput("SUCCESS_ADDED");
   }
 }
 
-// scanTeamData ramane identic cu cel de data trecuta (include trenduri, max, analytics)
 function scanTeamData(teamToFind) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var rawSheet = ss.getSheetByName("RawData");
-  var sheetAnalytics = ss.getSheetByName("Analytics");
-  var rawVals = rawSheet.getDataRange().getValues();
+  if (!rawSheet) return ContentService.createTextOutput(JSON.stringify({error: true})).setMimeType(ContentService.MimeType.JSON);
   
+  var rawVals = rawSheet.getDataRange().getValues();
   var match = rawVals.find(row => row[0].toString().replace(/'/g, "").trim() === teamToFind.toString().trim());
+  
   if (!match) return ContentService.createTextOutput(JSON.stringify({error: true})).setMimeType(ContentService.MimeType.JSON);
 
   const parseList = (val) => {
@@ -84,24 +101,10 @@ function scanTeamData(teamToFind) {
   var scores = parseList(match[5]); 
   var rps = parseList(match[6]);
 
-  var strategy = "Fara Date";
-  if (sheetAnalytics) {
-    var aData = sheetAnalytics.getDataRange().getValues();
-    for (var i = 1; i < aData.length; i++) {
-      if (aData[i][0].toString().trim() === teamToFind.toString().trim()) {
-        strategy = aData[i][3] || "Nespecificat";
-        break;
-      }
-    }
-  }
-
   return ContentService.createTextOutput(JSON.stringify({
     avgGeneral: getAvg(scores),
-    avgLast3: getAvg(scores.slice(-3)),
     maxAutoAp: getMax(autoAp),
     maxAutoDep: getMax(autoDep),
-    teleopStrategy: strategy,
-    avgRP: getAvg(rps),
     chartData: scores.slice(-10)
   })).setMimeType(ContentService.MimeType.JSON);
 }
